@@ -63,6 +63,23 @@ h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em
 .amp{font-family:'Instrument Serif',serif;font-style:italic;font-size:2.1rem;line-height:1;color:#fff}
 
 
+/* ribbon tied round the letter: loosens once the letter is out */
+.rband{position:absolute;left:0;right:0;top:60%;height:20px;background:linear-gradient(180deg,#b81f3c,#e03a59 50%,#b81f3c);box-shadow:0 2px 4px rgba(80,0,20,.25);transition:transform 1.2s cubic-bezier(.5,0,.8,.4),opacity .5s .8s}
+.rbow{position:absolute;left:50%;top:calc(60% - 20px);width:88px;height:52px;margin-left:-44px;overflow:visible;filter:drop-shadow(0 2px 3px rgba(80,0,20,.3));transition:transform 1.2s cubic-bezier(.5,0,.8,.4),opacity .5s .8s}
+.rbow *{transform-box:view-box;transform-origin:50px 26px}
+.envelope.untie .rb-knot{animation:knotOut 1s ease-in-out forwards}
+.envelope.untie .rb-ll{animation:loopL 1.1s ease-in-out forwards}
+.envelope.untie .rb-lr{animation:loopR 1.1s ease-in-out forwards}
+.envelope.untie .rb-tl{animation:tailL 1.1s ease-in .1s forwards}
+.envelope.untie .rb-tr{animation:tailR 1.1s ease-in .1s forwards}
+@keyframes knotOut{25%{transform:rotate(-14deg) scale(1.15)}50%{transform:rotate(10deg) scale(1.1)}100%{transform:scale(.05);opacity:0}}
+@keyframes loopL{30%{transform:scale(1.06) rotate(-5deg)}100%{transform:translate(-14px,8px) scale(.2,.08) rotate(-24deg);opacity:0}}
+@keyframes loopR{30%{transform:scale(1.06) rotate(5deg)}100%{transform:translate(14px,8px) scale(.2,.08) rotate(24deg);opacity:0}}
+@keyframes tailL{40%{transform:rotate(10deg)}100%{transform:translate(-18px,30px) rotate(36deg);opacity:0}}
+@keyframes tailR{40%{transform:rotate(-10deg)}100%{transform:translate(18px,30px) rotate(-36deg);opacity:0}}
+.envelope.slip .rband{transform:translateY(120px);opacity:0}
+.envelope.slip .rbow{transform:translateY(120px);opacity:0}
+
 /* question */
 .drawheart{width:84px;height:84px;margin-bottom:10px;overflow:visible}
 .drawheart path{fill:rgba(217,63,104,0);stroke:var(--rose);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
@@ -137,7 +154,16 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 <!-- 1. Envelope -->
 <section class="screen active" id="s1">
   <div class="to" id="toLine"></div>
-  <div class="envelope" id="env"><div class="letter"><b id="letterMark"></b><i>An invitation</i></div><div class="flap"></div><div class="seal"><svg class="ic fill"><use href="#i-heart"/></svg></div></div>
+  <div class="envelope" id="env"><div class="letter"><b id="letterMark"></b><i>An invitation</i>
+    <div class="rband"></div>
+    <svg class="rbow" viewBox="0 0 100 60" aria-hidden="true">
+      <path class="rb-tl" d="M47 29 L33 56 L42 53 L46 60 L54 31Z" fill="#c9283f"/>
+      <path class="rb-tr" d="M53 29 L67 56 L58 53 L54 60 L46 31Z" fill="#c9283f"/>
+      <path class="rb-ll" d="M50 26 C30 4 6 10 16 26 C6 42 30 48 50 26Z" fill="#dd3453" stroke="#a51a35" stroke-width="1"/>
+      <path class="rb-lr" d="M50 26 C70 4 94 10 84 26 C94 42 70 48 50 26Z" fill="#dd3453" stroke="#a51a35" stroke-width="1"/>
+      <rect class="rb-knot" x="43" y="19" width="14" height="14" rx="4.500" fill="#b01c38"/>
+    </svg>
+  </div><div class="flap"></div><div class="seal"><svg class="ic fill"><use href="#i-heart"/></svg></div></div>
   <div class="hint">Tap to open</div>
 </section>
 
@@ -237,9 +263,11 @@ document.getElementById('env').onclick = function(){
   const env = this, s1 = document.getElementById('s1');
   s1.classList.add('started'); env.classList.add('opening');   /* seal cracks */
   setTimeout(() => { env.classList.add('open'); burst(26) }, 800);   /* flap lifts, petals */
-  setTimeout(() => env.classList.add('rise'), 2200);                 /* letter slides out */
-  setTimeout(() => s1.classList.add('leaving'), 4300);               /* envelope fades */
-  setTimeout(() => { show('s2'); typeTitle() }, 5200);
+  setTimeout(() => env.classList.add('rise'), 1900);                 /* letter slides out */
+  setTimeout(() => env.classList.add('untie'), 3700);                /* ribbon bow loosens */
+  setTimeout(() => env.classList.add('slip'), 4500);                 /* ribbon slides off */
+  setTimeout(() => s1.classList.add('leaving'), 6000);               /* envelope fades */
+  setTimeout(() => { show('s2'); typeTitle() }, 6900);
 };
 
 /* ---------- The runaway No button ---------- */
