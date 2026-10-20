@@ -3,131 +3,139 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A little invitation</title>
+<title>An invitation</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
 <style>
 /*
   HOW TO REUSE THIS PAGE
   Everything comes from the link, no editing needed. Example:
   ?to=Rejoice&from=Phellep&days=2026-10-23,2026-10-24&meal=dinner
-  &venue=Name%20of%20place&address=Windhoek&lat=-22.56&lng=17.08&phone=264811234567
-  &note=...&dress=...&sub=...
+  &venue=Name%20of%20place&address=Windhoek&lat=-22.56&lng=17.08
+  &phone=264817854558&note=...&dress=...&sub=...
   days   : one or more dates (YYYY-MM-DD). Two or more lets her choose.
   meal   : lunch, dinner, or leave out so she chooses.
   venue  : leave out while undecided, the page says so honestly.
-  lat/lng: optional exact pin for the map (right click the spot in Google Maps).
-  reveal : 0 skips the "tap to reveal" step.  photo : optional image.
+  lat/lng: optional exact pin for the map.
+  reveal : 0 skips the reveal step.   photo : optional image.
 */
-:root{--rose:#e8456b;--deep:#7a1f3d;--blush:#ffe3ea;--cream:#fff8f3;--gold:#c9a24b}
+:root{--rose:#d93f68;--deep:#6e1a38;--blush:#ffe6ec;--cream:#fff8f3;--gold:#c9a24b;--ink:#4a1226}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'DM Sans',sans-serif;color:var(--deep);background:radial-gradient(circle at 20% 10%,#ffd3df 0,transparent 45%),radial-gradient(circle at 85% 90%,#ffc2d1 0,transparent 45%),var(--cream);overflow-x:hidden}
+html,body{height:100%;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;color:var(--deep);background:radial-gradient(circle at 15% 8%,#ffd3df 0,transparent 45%),radial-gradient(circle at 88% 92%,#ffc2d1 0,transparent 45%),var(--cream);overflow-x:hidden}
+h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em}
+
+/* icons */
+.ic{width:24px;height:24px;fill:none;stroke:var(--rose);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.fill{fill:currentColor;stroke:none}
+.ic.sm{width:17px;height:17px;vertical-align:-3px;margin-right:6px;stroke:currentColor}
+
+/* drifting petals and hearts */
 .floaters{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.floaters span{position:absolute;bottom:-40px;opacity:.5;animation:rise linear infinite}
-@keyframes rise{to{transform:translateY(-110vh) rotate(40deg);opacity:0}}
-.screen{position:relative;z-index:1;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.floaters svg{position:absolute;bottom:-50px;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-115vh) rotate(60deg);opacity:0}}
+
+.screen{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));text-align:center}
 .screen.active{display:flex;animation:fade .8s ease}
 @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em}
-.hint{margin-top:18px;font-size:.9rem;opacity:.7;animation:pulse 1.8s infinite}
+.hint{margin-top:20px;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6;animation:pulse 1.8s infinite}
 @keyframes pulse{50%{opacity:.25}}
 
 /* envelope */
-.envelope{position:relative;width:min(300px,80vw);height:200px;background:#f7c6d2;border-radius:6px;cursor:pointer;box-shadow:0 18px 40px rgba(122,31,61,.25);transition:transform .3s}
+.to{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.9rem;margin-bottom:26px}
+.envelope{position:relative;width:min(300px,80vw);height:200px;background:#f4b9c8;border-radius:6px;cursor:pointer;box-shadow:0 18px 40px rgba(110,26,56,.25);transition:transform .3s}
 .envelope:hover{transform:scale(1.03)}
-.flap{position:absolute;top:0;left:0;width:100%;height:100px;background:#f0a9bc;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s;z-index:3}
-.envelope::before{content:"";position:absolute;inset:0;background:#fbd3dd;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);z-index:2;border-radius:6px}
-.seal{position:absolute;top:78px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:var(--rose);color:#fff;display:grid;place-items:center;font-size:20px;z-index:4;box-shadow:0 4px 10px rgba(0,0,0,.25);transition:opacity .3s}
+.flap{position:absolute;top:0;left:0;width:100%;height:100px;background:#ec9db2;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s;z-index:3}
+.envelope::before{content:"";position:absolute;inset:0;background:#f9cdd9;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);z-index:2;border-radius:6px}
+.seal{position:absolute;top:76px;left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f0657f,var(--rose) 60%,#a82a4f);color:#fff;display:grid;place-items:center;z-index:4;box-shadow:0 4px 10px rgba(0,0,0,.3);transition:opacity .3s}
+.seal .ic{width:22px;height:22px}
 .envelope.open .flap{transform:rotateX(180deg);z-index:1}
 .envelope.open .seal{opacity:0}
-.to{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.7rem;margin-bottom:26px}
 
 /* question */
-.q h1{font-size:clamp(2.2rem,9vw,3.3rem);line-height:1.1;margin-bottom:10px}
-.q p{max-width:420px;margin-bottom:28px;font-weight:300}
-.emoji-big{font-size:4rem;margin-bottom:14px;animation:beat 1.2s infinite}
-@keyframes beat{50%{transform:scale(1.15)}}
-.btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:90px;flex-wrap:wrap}
-button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s}
-.yes{background:var(--rose);color:#fff;padding:14px 34px;font-size:1.05rem;box-shadow:0 8px 20px rgba(232,69,107,.4)}
+.drawheart{width:84px;height:84px;margin-bottom:10px;overflow:visible}
+.drawheart path{fill:rgba(217,63,104,0);stroke:var(--rose);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.screen.active .drawheart path{animation:draw 2.4s ease forwards,fillin 1s 2.2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fillin{to{fill:rgba(217,63,104,.9)}}
+.q h1{font-size:clamp(2.2rem,9vw,3.3rem);line-height:1.1;margin-bottom:12px;min-height:2.3em;max-width:560px}
+.q p{max-width:420px;margin-bottom:26px;font-weight:300;font-size:1.02rem}
+.btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:90px;flex-wrap:wrap;max-width:100%}
+button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s;min-height:48px;touch-action:manipulation}
+.yes{background:var(--rose);color:#fff;padding:14px 38px;font-size:1.05rem;box-shadow:0 8px 20px rgba(217,63,104,.4)}
 .yes:hover{transform:scale(1.06)}
-.no{background:#fff;color:var(--deep);padding:12px 26px;font-size:.95rem;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.no{background:#fff;color:var(--deep);padding:12px 26px;font-size:.95rem;box-shadow:0 4px 12px rgba(0,0,0,.12);touch-action:none;user-select:none;-webkit-user-select:none}
 .no.run{position:fixed;z-index:50}
-.taunt{height:24px;margin-top:16px;font-size:.9rem;font-style:italic;opacity:.8}
+.taunt{height:24px;margin-top:14px;font-family:'Instrument Serif',serif;font-style:italic;font-size:1.15rem;opacity:.85}
 
 /* ticket */
-.ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(122,31,61,.22);overflow:hidden;text-align:left}
-.t-head{background:linear-gradient(135deg,var(--rose),#b02a56);color:#fff;padding:26px 24px;text-align:center}
-.t-head h2{font-size:2.1rem}
-.t-head small{opacity:.85;letter-spacing:.18em;text-transform:uppercase;font-size:.7rem}
-.t-body{padding:22px 24px;display:grid;gap:14px;position:relative}
-.t-body::before{content:"";position:absolute;top:-10px;left:0;right:0;border-top:2px dashed #f3c2cf}
+.ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
+.t-head{background:linear-gradient(135deg,var(--rose),#a82a4f);color:#fff;padding:24px;text-align:center}
+.t-head h2{font-size:2.2rem;line-height:1.05}
+.t-head small{display:block;opacity:.85;letter-spacing:.22em;text-transform:uppercase;font-size:.68rem;margin-bottom:6px}
+.duo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px}
+.av{width:56px;height:56px;border-radius:50%;background:#fff;color:var(--rose);display:grid;place-items:center;font-family:'Instrument Serif',serif;font-size:1.8rem;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.duo .hrt{width:22px;height:22px;color:#fff;animation:beat 1.4s infinite}
+@keyframes beat{50%{transform:scale(1.2)}}
+.photo{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.t-body{padding:22px 24px;display:grid;gap:16px;position:relative}
+.t-body::before{content:"";position:absolute;top:-1px;left:16px;right:16px;border-top:2px dashed #f3c2cf}
 .row{display:flex;gap:14px;align-items:flex-start}
-.row .ic{font-size:1.4rem;width:32px;text-align:center}
-.row b{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
-.row span{font-size:1rem}
+.row .ic{margin-top:2px}
+.row b{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rose);margin-bottom:2px}
+.row span.v{font-size:1.02rem}
+.countdown{font-family:'Caveat',cursive;font-size:1.25rem;color:var(--rose);margin-top:2px}
+.countdown:empty{display:none}
 .pick{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
 .pick button{flex:1 1 130px;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
 .pick button.on{background:var(--rose);color:#fff}
 .note{font-family:'Caveat',cursive;background:var(--blush);padding:14px 16px;border-radius:12px;font-size:1.3rem;line-height:1.3}
-.actions{display:grid;gap:10px;padding:0 24px 24px}
-.act{display:block;text-align:center;text-decoration:none;background:var(--deep);color:#fff;padding:13px;border-radius:999px;font-size:.92rem;font-weight:600;transition:transform .2s}
-.act:hover{transform:translateY(-2px)}
-.act.alt{background:var(--blush);color:var(--deep)}
-.act.wa{background:#25a55f}
-.mapwrap{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(122,31,61,.15);height:200px;background:var(--blush)}
+.revealbtn{background:linear-gradient(135deg,var(--gold),#e6c36a);color:#40290a;padding:12px 18px;font-size:.92rem;width:100%;animation:glow 2s infinite}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(201,162,75,.25)}}
+.venue-name{display:none;font-family:'Instrument Serif',serif;font-size:1.7rem;line-height:1.1;animation:fade .8s ease}
+.revealed .venue-name{display:block}
+.revealed .revealbtn{display:none}
+.mapwrap{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(110,26,56,.15);height:200px;background:var(--blush)}
 .mapwrap iframe{width:100%;height:100%;border:0;display:block}
 .lockhint{padding:0 24px 14px;font-size:.88rem;opacity:.75;text-align:center}
 .lockhint:empty{display:none}
-.sign{margin-top:18px;font-family:'Caveat',cursive;font-size:1.6rem;opacity:.85}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
-
-/* duo avatars / photo */
-.duo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
-.av{width:58px;height:58px;border-radius:50%;background:#fff;color:var(--rose);display:grid;place-items:center;font-family:'Instrument Serif',serif;font-size:1.7rem;font-weight:400;box-shadow:0 6px 16px rgba(0,0,0,.2)}
-.duo .hrt{font-size:1.6rem;animation:beat 1.2s infinite}
-.photo{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
-
-/* venue reveal */
-.revealbtn{background:linear-gradient(135deg,var(--gold),#e6c36a);color:#4a3200;padding:12px 18px;font-size:.92rem;width:100%;animation:glow 2s infinite}
-@keyframes glow{50%{box-shadow:0 0 0 8px rgba(201,162,75,.25)}}
-.venue-name{display:none;font-family:'Instrument Serif',serif;font-size:1.6rem;line-height:1.15;animation:fade .8s ease}
-.revealed .venue-name{display:block}
-.revealed .revealbtn{display:none}
+.actions{display:grid;gap:10px;padding:0 24px 24px}
+.act{display:block;text-align:center;text-decoration:none;background:var(--deep);color:#fff;padding:14px;border-radius:999px;font-size:.92rem;font-weight:600;transition:transform .2s}
+.act:hover{transform:translateY(-2px)}
+.act.alt{background:var(--blush);color:var(--deep)}
+.act.wa{background:#1f9a55}
 .locked .needs{display:none}
-
-/* mobile polish */
-html,body{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
-.screen{min-height:100vh;min-height:100dvh;padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom))}
-button,.act{min-height:48px;touch-action:manipulation}
-.no{touch-action:none;user-select:none;-webkit-user-select:none}
-.btns{max-width:100%;overflow:visible}
-@media (max-width:420px){
-  .t-head h2{font-size:1.9rem}
-  .t-body{padding:20px 18px}
-  .actions{padding:0 18px 20px}
-  .envelope{height:180px}
-}
+.sign{margin-top:18px;font-family:'Caveat',cursive;font-size:1.7rem;opacity:.85}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+@media (max-width:420px){.t-body{padding:20px 18px}.actions{padding:0 18px 20px}.envelope{height:180px}.t-head h2{font-size:2rem}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></symbol>
+  <symbol id="i-petal" viewBox="0 0 24 24"><path d="M12 2C18 7 18 17 12 22C6 17 6 7 12 2Z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-plate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6-5.5 6-10.5a6 6 0 0 0-12 0C6 15.5 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.2"/></symbol>
+  <symbol id="i-hanger" viewBox="0 0 24 24"><path d="M12 9V8a2 2 0 1 0-2-2"/><path d="M12 9L3 16.5a1 1 0 0 0 .6 1.8h16.8a1 1 0 0 0 .6-1.8Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+</svg>
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
 
 <!-- 1. Envelope -->
 <section class="screen active" id="s1">
   <div class="to" id="toLine"></div>
-  <div class="envelope" id="env"><div class="flap"></div><div class="seal">💌</div></div>
-  <div class="hint">Tap the envelope</div>
+  <div class="envelope" id="env"><div class="flap"></div><div class="seal"><svg class="ic fill"><use href="#i-heart"/></svg></div></div>
+  <div class="hint">Tap to open</div>
 </section>
 
 <!-- 2. Question -->
 <section class="screen q" id="s2">
-  <div class="emoji-big" id="bigEmoji">🌹</div>
+  <svg class="drawheart" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></svg>
   <h1 id="qTitle"></h1>
   <p id="qSub"></p>
   <div class="btns" id="btns">
-    <button class="yes" id="yes">Yes, absolutely 💖</button>
+    <button class="yes" id="yes">Yes</button>
     <button class="no" id="no">No</button>
   </div>
   <div class="taunt" id="taunt"></div>
@@ -136,25 +144,25 @@ button,.act{min-height:48px;touch-action:manipulation}
 <!-- 3. Details -->
 <section class="screen" id="s3">
   <div class="ticket">
-    <div class="t-head"><div class="duo" id="duo"></div><small>For two</small><h2 id="tTitle"></h2></div>
+    <div class="t-head"><div class="duo" id="duo"></div><small>Reserved for two</small><h2 id="tTitle"></h2></div>
     <div class="t-body">
-      <div class="row"><div class="ic">📅</div><div style="width:100%"><b>When</b><span id="tWhen"></span>
+      <div class="row"><svg class="ic"><use href="#i-cal"/></svg><div style="width:100%"><b>When</b><span class="v" id="tWhen"></span><div class="countdown" id="countdown"></div>
         <div class="pick" id="dayPick" style="display:none"></div></div></div>
-      <div class="row" id="mealRow" style="display:none"><div class="ic">🍽️</div><div style="width:100%"><b>Your choice</b>
-        <div class="pick"><button data-m="lunch">☀️ Lunch</button><button data-m="dinner">🌙 Dinner</button></div></div></div>
-      <div class="row" id="whereRow"><div class="ic">📍</div><div style="width:100%"><b>Where</b>
-        <button class="revealbtn" id="revealBtn">🔒 Tap to reveal the venue</button>
+      <div class="row" id="mealRow" style="display:none"><svg class="ic"><use href="#i-plate"/></svg><div style="width:100%"><b>Your choice</b>
+        <div class="pick"><button data-m="lunch">Lunch</button><button data-m="dinner">Dinner</button></div></div></div>
+      <div class="row" id="whereRow"><svg class="ic"><use href="#i-pin"/></svg><div style="width:100%"><b>Where</b>
+        <button class="revealbtn" id="revealBtn"><svg class="ic sm"><use href="#i-lock"/></svg>Tap to reveal the venue</button>
         <span class="venue-name" id="tWhere"></span></div></div>
       <div class="mapwrap" id="mapWrap" style="display:none"><iframe id="mapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map of the venue"></iframe></div>
-      <div class="row" id="dressRow"><div class="ic">👗</div><div><b>Dress code</b><span id="tDress"></span></div></div>
+      <div class="row" id="dressRow"><svg class="ic"><use href="#i-hanger"/></svg><div><b>Dress code</b><span class="v" id="tDress"></span></div></div>
       <div class="note" id="tNote" style="display:none"></div>
     </div>
     <div class="lockhint" id="lockHint"></div>
     <div class="actions">
-      <a class="act needs" id="gcal" target="_blank" rel="noopener">📆 Add to Google Calendar</a>
-      <a class="act alt needs" id="ics" href="#">⬇️ Download for Apple or Outlook</a>
-      <a class="act alt needs" id="dir" target="_blank" rel="noopener">🗺️ Get directions</a>
-      <a class="act wa" id="wa" target="_blank" rel="noopener">💬 Tell me you're coming</a>
+      <a class="act needs" id="gcal" target="_blank" rel="noopener">Add to Google Calendar</a>
+      <a class="act alt needs" id="ics" href="#">Add to Apple or Outlook calendar</a>
+      <a class="act alt needs" id="dir" target="_blank" rel="noopener">Get directions</a>
+      <a class="act wa" id="wa" target="_blank" rel="noopener">Reply on WhatsApp</a>
     </div>
   </div>
   <div class="sign" id="sign"></div>
@@ -163,6 +171,7 @@ button,.act{min-height:48px;touch-action:manipulation}
 <script>
 const P = new URLSearchParams(location.search);
 const g = (k, d) => (P.get(k) || d).trim();
+const HEART = 'M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z';
 
 /* ---------- Details (set through the link) ---------- */
 const C = {
@@ -170,8 +179,9 @@ const C = {
   days: g('days', g('date','')).split(',').map(x=>x.trim()).filter(Boolean),
   meal: g('meal','choose'), time: g('time',''),
   venue: g('venue',''), address: g('address',''), map: g('map',''),
+  lat: g('lat',''), lng: g('lng',''),
   dress: g('dress',''), phone: g('phone','').replace(/\D/g,''),
-  photo: g('photo',''), lat: g('lat',''), lng: g('lng',''), reveal: g('reveal','1'),
+  photo: g('photo',''), reveal: g('reveal','1'),
   sub: g('sub','Just the two of us. I would really like that.'),
   note: g('note','')
 };
@@ -181,37 +191,51 @@ const hasVenue = !!C.venue;
 const defTime = m => m === 'lunch' ? '13:00' : '19:00';
 const fmtDay = (d, long) => { const x = new Date(d + 'T12:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', long ? {weekday:'long',day:'numeric',month:'long',year:'numeric'} : {weekday:'long',day:'numeric',month:'long'}) };
 const mealWord = () => meal || 'dinner';
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* ---------- Background hearts ---------- */
+/* ---------- Drifting hearts and petals ---------- */
 const fl = document.getElementById('floaters');
-for(let i=0;i<22;i++){const s=document.createElement('span');s.textContent=['💗','💕','🌸','✨','💖','🌹'][i%6];
-  s.style.left=Math.random()*100+'vw';s.style.fontSize=(14+Math.random()*22)+'px';
-  s.style.animationDuration=(9+Math.random()*12)+'s';s.style.animationDelay=(-Math.random()*20)+'s';fl.appendChild(s)}
+for(let i=0;i<20;i++){
+  const sz = 14 + Math.random()*24, petal = i % 3 === 0;
+  const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  el.setAttribute('viewBox','0 0 24 24'); el.setAttribute('width',sz); el.setAttribute('height',sz);
+  el.innerHTML = '<use href="#' + (petal ? 'i-petal' : 'i-heart') + '" fill="' + (petal ? '#f3a6ba' : '#e8627f') + '" opacity="' + (.25 + Math.random()*.3) + '"/>';
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.animationDuration = (10 + Math.random()*14) + 's';
+  el.style.animationDelay = (-Math.random()*24) + 's';
+  fl.appendChild(el);
+}
 
 /* ---------- Screens ---------- */
-const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)};
+const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){}};
 document.getElementById('toLine').textContent = 'For ' + C.to;
-document.getElementById('qTitle').textContent = C.to + ', can I take you out' + (meal ? ' for ' + meal : '') + '?';
+const titleText = C.to + ', can I take you out' + (meal ? ' for ' + meal : '') + '?';
+const qTitle = document.getElementById('qTitle');
+qTitle.setAttribute('aria-label', titleText);
 document.getElementById('qSub').textContent = C.sub;
-
+let typer;
+function typeTitle(){
+  clearInterval(typer); let i = 0; qTitle.textContent = '';
+  typer = setInterval(() => { qTitle.textContent = titleText.slice(0, ++i); if(i >= titleText.length) clearInterval(typer) }, 45);
+}
 document.getElementById('env').onclick = function(){
-  this.classList.add('open'); setTimeout(()=>show('s2'),900);
+  this.classList.add('open'); setTimeout(() => { show('s2'); typeTitle() }, 900);
 };
 
 /* ---------- The runaway No button ---------- */
 const no = document.getElementById('no'), yes = document.getElementById('yes'), taunt = document.getElementById('taunt');
-const taunts = ['Are you sure? 🥺','Eish, that button is not working today','Try the other one, it is bigger','I will pay, just saying','Come on, ' + C.to + '…','I can see you smiling','Okay, last chance to be reasonable'];
-const noLabels = ['No','Hmm','Really?','Please?','Okay, fine, yes 🙈'];
+const taunts = ['Are you sure?','Eish, that button is not working today','Try the other one, it is bigger','I will pay, just saying','Come on, ' + C.to + '.','I can see you smiling','Okay, last chance to be reasonable'];
+const noLabels = ['No','Hmm','Really?','Please?','Okay, fine, yes'];
 let tries = 0, scale = 1, lastDodge = 0;
 function dodge(e){
   if(e){e.preventDefault()}
   const now = Date.now(); if(now - lastDodge < 350) return; lastDodge = now; /* one dodge per touch, phones fire several events */
   tries++; scale = Math.min(scale + .18, innerWidth < 500 ? 1.7 : 2.6);
-  yes.style.transform = `scale(${scale})`;
-  yes.style.margin = (scale*8)+'px';
+  yes.style.transform = 'scale(' + scale + ')';
+  yes.style.margin = (scale*8) + 'px';
   taunt.textContent = taunts[(tries-1) % taunts.length];
   no.textContent = noLabels[Math.min(tries, noLabels.length-1)];
-  if(tries >= 5){ no.classList.remove('run'); no.style.left=no.style.top=''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform='scale(1.3)'; return }
+  if(tries >= 5){ no.classList.remove('run'); no.style.left = no.style.top = ''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform = 'scale(1.3)'; return }
   const w = no.offsetWidth, h = no.offsetHeight;
   no.classList.add('run');
   no.style.left = Math.max(8, Math.random()*(innerWidth - w - 16)) + 'px';
@@ -222,28 +246,27 @@ no.addEventListener('pointerdown', dodge);
 no.addEventListener('touchstart', dodge, {passive:false});
 no.onclick = dodge;
 yes.onclick = sayYes;
-
 function sayYes(){ burst(); show('s3'); build(); setTimeout(burst, 700); }
 
 /* ---------- Ticket ---------- */
-const initial = s => (s.trim()[0] || '♥').toUpperCase();
-const initials = () => `<div class="av">${initial(C.from)}</div><div class="hrt">💕</div><div class="av">${initial(C.to)}</div>`;
+const initial = s => (s.trim()[0] || '').toUpperCase();
+const initials = () => '<div class="av">' + initial(C.from) + '</div><svg class="ic fill hrt"><use href="#i-heart"/></svg><div class="av">' + initial(C.to) + '</div>';
 function buildDuo(){
   const duo = document.getElementById('duo');
   if(C.photo){
     const img = new Image(); img.className = 'photo'; img.alt = 'Us'; img.src = C.photo;
     img.onerror = () => { duo.innerHTML = initials() };
-    duo.appendChild(img);
+    duo.innerHTML = ''; duo.appendChild(img);
   } else duo.innerHTML = initials();
 }
 let revealed = C.reveal === '0' || !hasVenue;
 
 function when(){
-  const dayTxt = day ? fmtDay(day, true) : (C.days.length ? 'Friday or Saturday, you choose' : 'Date to be agreed');
-  const mealTxt = meal ? ' (' + meal + ')' : '';
-  if(!day || !meal) return dayTxt + (meal ? ', ' + meal : '') + (day && !meal ? ', lunch or dinner' : '');
-  return dayTxt + ' at ' + (C.time || defTime(meal)) + mealTxt;
+  const dayTxt = day ? fmtDay(day, true) : (C.days.length ? 'Your choice of day' : 'Day to be agreed');
+  if(!day) return dayTxt;
+  return meal ? dayTxt + ' at ' + (C.time || defTime(meal)) : dayTxt + ', lunch or dinner';
 }
+function sleeps(d){ const t = new Date(); t.setHours(0,0,0,0); return Math.round((new Date(d + 'T00:00:00') - t) / 864e5) }
 function times(){
   const t = C.time || defTime(meal || 'dinner');
   const [h,m] = t.split(':').map(Number);
@@ -255,14 +278,16 @@ function times(){
 
 function build(){
   buildDuo();
-  document.getElementById('tTitle').textContent = meal === 'lunch' ? 'Lunch, you and me' : meal === 'dinner' ? 'Dinner, you and me' : 'You and me';
+  document.getElementById('tTitle').textContent = meal ? cap(meal) + ', you and me' : 'You and me';
   document.getElementById('tWhen').textContent = when();
+  const n = day ? sleeps(day) : -1;
+  document.getElementById('countdown').textContent = n < 0 ? '' : n === 0 ? 'That is today.' : n === 1 ? 'That is tomorrow.' : 'That is ' + n + ' sleeps away.';
 
   /* day picker (only when more than one date was offered) */
   const dp = document.getElementById('dayPick');
   if(C.days.length > 1){
     dp.style.display = 'flex'; dp.innerHTML = '';
-    C.days.forEach(d => { const b = document.createElement('button'); b.textContent = fmtDay(d,false).replace(/,? 2026$/,''); b.classList.toggle('on', d === day); b.onclick = () => { day = d; build(); burst(40) }; dp.appendChild(b) });
+    C.days.forEach(d => { const b = document.createElement('button'); b.textContent = fmtDay(d,false); b.classList.toggle('on', d === day); b.onclick = () => { day = d; build(); burst(40) }; dp.appendChild(b) });
   }
   /* meal picker */
   document.getElementById('mealRow').style.display = meal ? 'none' : 'flex';
@@ -281,6 +306,7 @@ function build(){
     const fr = document.getElementById('mapFrame'), src = 'https://maps.google.com/maps?q=' + encodeURIComponent(q) + '&z=16&output=embed';
     if(fr.getAttribute('src') !== src) fr.setAttribute('src', src);
   } else mw.style.display = 'none';
+
   document.getElementById('tDress').textContent = C.dress;
   document.getElementById('dressRow').style.display = C.dress ? 'flex' : 'none';
   const note = document.getElementById('tNote');
@@ -290,42 +316,48 @@ function build(){
   /* calendar and directions unlock once there is a day, a venue and it has been revealed */
   const ready = hasVenue && revealed && !!day;
   document.querySelector('.actions').classList.toggle('locked', !ready);
-  const hint = document.getElementById('lockHint');
-  hint.textContent = ready ? '' : !day ? 'Pick a day above and the calendar buttons will appear.' : !hasVenue ? 'The calendar and directions appear once I have chosen the venue.' : 'Reveal the venue to unlock the calendar.';
+  document.getElementById('lockHint').textContent = ready ? '' : !day ? 'Pick a day above and the calendar buttons will appear.' : !hasVenue ? 'The calendar and directions appear once I have chosen the venue.' : 'Reveal the venue to unlock the calendar.';
 
   const loc = C.venue + (C.address ? ', ' + C.address : '');
-  const title = mealWord().replace(/^./, c => c.toUpperCase()) + ' with ' + C.from;
+  const title = cap(mealWord()) + ' with ' + C.from;
   const det = [C.note, C.dress && 'Dress code: ' + C.dress].filter(Boolean).join(' ');
   if(day){
     const [s,e] = times();
     document.getElementById('gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + s + '/' + e + '&location=' + encodeURIComponent(loc) + '&details=' + encodeURIComponent(det);
     document.getElementById('ics').onclick = ev => {
       ev.preventDefault();
-      const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Invite//EN','BEGIN:VEVENT','UID:' + Date.now() + '@invite','DTSTAMP:' + s,'DTSTART:' + s,'DTEND:' + e,'SUMMARY:' + title,'LOCATION:' + loc.replace(/,/g,'\\,'),'DESCRIPTION:' + det.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Dinner soon','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+      const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Invite//EN','BEGIN:VEVENT','UID:' + Date.now() + '@invite','DTSTAMP:' + s,'DTSTART:' + s,'DTEND:' + e,'SUMMARY:' + title,'LOCATION:' + loc.replace(/,/g,'\\,'),'DESCRIPTION:' + (det || title).replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:' + title,'END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
       const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download = 'dinner.ics'; a.click();
     };
   }
-  document.getElementById('dir').href = C.map || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
+  document.getElementById('dir').href = C.map || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent((C.lat && C.lng) ? C.lat + ',' + C.lng : loc);
 
   const dayShort = day ? fmtDay(day,false).split(' ')[0] : '';
   const msg = day
-    ? `Hi ${C.from}, ${dayShort} works for me.` + (hasVenue ? ` See you at ${C.venue}.` : ' So where are we going? 😄')
-    : `Hi ${C.from}, I got your invite. Let me check which day suits me and I will tell you.`;
+    ? 'Hi ' + C.from + ', ' + dayShort + ' works for me.' + (hasVenue ? ' See you at ' + C.venue + '.' : ' So where are we going?')
+    : 'Hi ' + C.from + ', I got your invite. Let me check which day suits me and I will tell you.';
   document.getElementById('wa').href = (C.phone ? 'https://wa.me/' + C.phone : 'https://wa.me/') + '?text=' + encodeURIComponent(msg);
 }
 
-/* ---------- Confetti ---------- */
+/* ---------- Confetti: hearts and petals, drawn not typed ---------- */
 const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+const heartPath = typeof Path2D !== 'undefined' ? new Path2D(HEART) : null;
+const petalPath = typeof Path2D !== 'undefined' ? new Path2D('M12 2C18 7 18 17 12 22C6 17 6 7 12 2Z') : null;
+const colours = ['#d93f68','#f08aa3','#f6b8c7','#c9a24b','#a82a4f'];
 let parts = [], running = false;
 function fit(){cv.width = innerWidth; cv.height = innerHeight} fit(); addEventListener('resize', fit);
 function burst(n=130){
-  for(let i=0;i<n;i++) parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-3,g:.35,r:Math.random()*10+10,t:['💖','💗','🌹','✨','💕'][i%5],life:110+Math.random()*50});
+  for(let i=0;i<n;i++) parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-3,g:.35,s:Math.random()*16+12,r:Math.random()*6,vr:(Math.random()-.5)*.3,petal:i%3===0,c:colours[i%colours.length],life:110+Math.random()*50});
   if(!running){running = true; requestAnimationFrame(loop)}
 }
 function loop(){
   cx.clearRect(0,0,cv.width,cv.height);
-  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.life--;cx.globalAlpha=Math.max(p.life/60,0);cx.font=p.r+'px serif';cx.fillText(p.t,p.x,p.y)});
-  parts = parts.filter(p=>p.life>0 && p.y<cv.height+40);
+  parts.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.vy += p.g; p.r += p.vr; p.life--;
+    cx.save(); cx.globalAlpha = Math.max(Math.min(p.life/60,1),0); cx.translate(p.x,p.y); cx.rotate(p.r); cx.scale(p.s/24,p.s/24); cx.translate(-12,-12); cx.fillStyle = p.c;
+    if(heartPath) cx.fill(p.petal ? petalPath : heartPath); cx.restore();
+  });
+  parts = parts.filter(p => p.life > 0 && p.y < cv.height + 40);
   if(parts.length) requestAnimationFrame(loop); else {running = false; cx.clearRect(0,0,cv.width,cv.height)}
 }
 </script>
