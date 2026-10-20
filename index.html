@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>An invitation</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
 <style>
 /*
   HOW TO REUSE THIS PAGE
@@ -23,7 +23,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
 body{font-family:'DM Sans',sans-serif;color:var(--deep);background:radial-gradient(circle at 15% 8%,#ffd3df 0,transparent 45%),radial-gradient(circle at 88% 92%,#ffc2d1 0,transparent 45%),var(--cream);overflow-x:hidden}
-h1,h2{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.01em}
+h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em}
 
 /* icons */
 .ic{width:24px;height:24px;fill:none;stroke:var(--rose);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -42,7 +42,7 @@ h1,h2{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.01em}
 @keyframes pulse{50%{opacity:.25}}
 
 /* envelope */
-.to{font-family:'Fraunces',serif;font-style:italic;font-size:1.6rem;margin-bottom:26px}
+.to{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.9rem;margin-bottom:26px}
 .envelope{position:relative;width:min(300px,80vw);aspect-ratio:3/2;background:#f4b9c8;border-radius:6px;cursor:pointer;box-shadow:0 18px 40px rgba(110,26,56,.25);transition:transform .3s}
 .envelope:hover{transform:scale(1.03)}
 .flap{position:absolute;top:0;left:0;width:100%;height:50%;background:#ec9db2;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform 1.6s cubic-bezier(.4,0,.2,1);z-index:3}
@@ -53,14 +53,14 @@ h1,h2{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.01em}
 @keyframes crack{20%{transform:translateX(-50%) rotate(-14deg) scale(1.12)}45%{transform:translateX(-50%) rotate(12deg) scale(1.12)}100%{transform:translateX(-50%) scale(.2);opacity:0}}
 .envelope.open .flap{transform:rotateX(180deg);z-index:0}
 .envelope.opening .letter{position:absolute;left:7%;right:7%;bottom:8px;height:78%;background:#fffdf9;border-radius:4px;z-index:1;display:flex;flex-direction:column;align-items:center;padding-top:16px;box-shadow:0 -2px 10px rgba(0,0,0,.1);transition:transform 1.6s cubic-bezier(.3,.7,.2,1)}
-.letter b{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:1.65rem;color:var(--rose);line-height:1}
+.letter b{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:2rem;color:var(--rose);line-height:1}
 .letter i{margin-top:6px;font-style:normal;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--deep);opacity:.6}
 .envelope.rise .letter{transform:translateY(-78%)}
 #s1{transition:opacity .9s ease}
 #s1.leaving{opacity:0}
 .hint{transition:opacity .4s}
 #s1.started .hint{opacity:0;animation:none}
-.amp{font-family:'Fraunces',serif;font-style:italic;font-size:1.8rem;line-height:1;color:#fff}
+.amp{font-family:'Instrument Serif',serif;font-style:italic;font-size:2.1rem;line-height:1;color:#fff}
 
 
 /* ribbon tied round the letter: loosens once the letter is out */
@@ -86,12 +86,12 @@ h1,h2{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.01em}
 .mfill{position:absolute;right:32px;top:40px;height:3px;border-radius:2px;background:var(--rose);width:0}
 .hrt{position:absolute;top:10px;width:64px;height:64px;display:grid;place-items:center}
 .hrt svg{position:absolute;inset:0;width:100%;height:100%;fill:currentColor;stroke:none;filter:drop-shadow(0 4px 6px rgba(110,26,56,.25))}
-.hrt span{position:relative;font-family:'Fraunces',serif;font-size:1.7rem;color:#fff;margin-top:-4px;transition:opacity .3s}
+.hrt span{position:relative;font-family:'Instrument Serif',serif;font-size:1.7rem;color:#fff;margin-top:-4px;transition:opacity .3s}
 .his{left:0;color:#8f2142}
 .hers{right:0;color:var(--rose);cursor:grab;touch-action:none;outline:none}
 .hers svg{animation:beat 1.6s infinite}
 .hers:active{cursor:grabbing}
-.pr{position:absolute;left:50%;top:42px;transform:translate(-50%,-50%);font-family:'Fraunces',serif;font-style:italic;font-size:1.5rem;color:#fff;opacity:0;transition:opacity .4s;pointer-events:none;z-index:3}
+.pr{position:absolute;left:50%;top:42px;transform:translate(-50%,-50%);font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;color:#fff;opacity:0;transition:opacity .4s;pointer-events:none;z-index:3}
 .merged .hrt span{opacity:0}
 .merged .hrt svg{animation:beat .7s 3}
 .merged .pr{opacity:1}
@@ -114,21 +114,21 @@ h1,h2{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-.01em}
 .screen.active .drawheart path{animation:draw 2.4s ease forwards,fillin 1s 2.2s ease forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes fillin{to{fill:rgba(217,63,104,.9)}}
-.q h1{font-size:clamp(1.9rem,7.6vw,2.7rem);line-height:1.15;margin-bottom:12px;min-height:2.3em;max-width:560px}
+.q h1{font-size:clamp(2.2rem,9vw,3.3rem);line-height:1.1;margin-bottom:12px;min-height:2.3em;max-width:560px}
 .q p{max-width:420px;margin-bottom:26px;font-weight:300;font-size:1.02rem}
 .btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:64px;flex-wrap:wrap;max-width:100%}
 button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s;min-height:48px;touch-action:manipulation}
 .no{background:#fff;color:var(--deep);padding:13px 28px;font-size:.98rem;border:1.5px solid #f2c4d1;box-shadow:0 3px 0 #f2c4d1,0 8px 16px rgba(110,26,56,.08);touch-action:none;user-select:none;-webkit-user-select:none}
 .no.run{position:fixed;z-index:50}
-.taunt{height:24px;margin-top:14px;font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;opacity:.85}
+.taunt{height:24px;margin-top:14px;font-family:'Instrument Serif',serif;font-style:italic;font-size:1.15rem;opacity:.85}
 
 /* ticket */
 .ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
 .t-head{background:linear-gradient(135deg,var(--rose),#a82a4f);color:#fff;padding:24px;text-align:center}
-.t-head h2{font-size:1.8rem;line-height:1.15}
+.t-head h2{font-size:2.2rem;line-height:1.05}
 .t-head small{display:block;opacity:.85;letter-spacing:.22em;text-transform:uppercase;font-size:.68rem;margin-bottom:6px}
 .duo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px}
-.av{width:56px;height:56px;border-radius:50%;background:#fff;color:var(--rose);display:grid;place-items:center;font-family:'Fraunces',serif;font-size:1.6rem;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.av{width:56px;height:56px;border-radius:50%;background:#fff;color:var(--rose);display:grid;place-items:center;font-family:'Instrument Serif',serif;font-size:1.8rem;box-shadow:0 6px 16px rgba(0,0,0,.2)}
 .duo .hrt{width:22px;height:22px;color:#fff;animation:beat 1.4s infinite}
 @keyframes beat{50%{transform:scale(1.2)}}
 .photo{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
@@ -143,7 +143,7 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .pick{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
 .pick.days{gap:12px;margin-top:12px}
 .pick.days button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 8px;border-radius:18px;flex:1 1 0;min-width:0}
-.pick.days .wd{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem;line-height:1.1}
+.pick.days .wd{font-family:'Instrument Serif',serif;font-weight:400;font-size:1.4rem;line-height:1.1}
 .pick.days .dt{font-size:.78rem;font-weight:400;opacity:.8}
 .venue-name.pending{font-family:'DM Sans',sans-serif;font-size:1rem;line-height:1.45;font-weight:400;opacity:.85}
 .pick button{flex:1 1 130px;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
@@ -151,7 +151,7 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .note{font-family:'Caveat',cursive;background:var(--blush);padding:14px 16px;border-radius:12px;font-size:1.3rem;line-height:1.3}
 .revealbtn{background:linear-gradient(135deg,var(--gold),#e6c36a);color:#40290a;padding:12px 18px;font-size:.92rem;width:100%;animation:glow 2s infinite}
 @keyframes glow{50%{box-shadow:0 0 0 8px rgba(201,162,75,.25)}}
-.venue-name{display:none;font-family:'Fraunces',serif;font-size:1.4rem;line-height:1.25;animation:fade .8s ease}
+.venue-name{display:none;font-family:'Instrument Serif',serif;font-size:1.7rem;line-height:1.15;animation:fade .8s ease}
 .revealed .venue-name{display:block}
 .revealed .revealbtn{display:none}
 .mapwrap{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(110,26,56,.15);height:200px;background:var(--blush)}
@@ -166,7 +166,7 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .locked .needs{display:none}
 .sign{margin-top:18px;font-family:'Caveat',cursive;font-size:1.7rem;opacity:.85}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
-@media (max-width:420px){.t-body{padding:20px 18px}.actions{padding:0 18px 20px}.t-head h2{font-size:1.65rem}}
+@media (max-width:420px){.t-body{padding:20px 18px}.actions{padding:0 18px 20px}.t-head h2{font-size:2rem}}
 </style>
 </head>
 <body>
