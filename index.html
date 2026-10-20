@@ -124,21 +124,7 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 
 /* ticket */
 .ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
-.t-head{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% -10%,#6e1f48 0,#2d0c21 78%);color:#fff;padding:20px 24px 22px;text-align:center}
-.t-head>*{position:relative}
-.t-head .dot{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
-@keyframes twinkle{50%{opacity:.2}}
-.const{display:block;width:min(250px,72%);margin:0 auto 8px;overflow:visible}
-.const polyline{fill:none;stroke:rgba(255,226,236,.8);stroke-width:1;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.8s .3s ease forwards}
-.const .glow{fill:rgba(255,200,220,.18)}
-.const .star{fill:#fff;opacity:0;animation:starin .5s forwards}
-.const .tw{animation:twinkle 3.2s infinite}
-.const text{fill:#fff;font-family:'Instrument Serif',serif;font-style:italic;font-size:17px;opacity:0;animation:starin .9s 2.6s forwards}
-@keyframes starin{to{opacity:1}}
-.stub{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 24px;border-top:2px dashed #f3c2cf;background:#fff8f3}
-.bars{height:38px;width:120px;flex:none}
-.stubtxt{text-align:right;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;line-height:1.6}
-.stubtxt b{display:block;color:var(--rose);font-weight:600}
+.t-head{background:linear-gradient(135deg,var(--rose),#a82a4f);color:#fff;padding:24px;text-align:center}
 .t-head h2{font-size:2.2rem;line-height:1.05}
 .t-head small{display:block;opacity:.85;letter-spacing:.22em;text-transform:uppercase;font-size:.68rem;margin-bottom:6px}
 .duo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px}
@@ -152,7 +138,7 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .row .ic{margin-top:2px}
 .row b{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rose);margin-bottom:2px}
 .row span.v{font-size:1.02rem}
-.countdown{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--rose);margin-top:2px;line-height:1.25}
+.countdown{font-family:'Caveat',cursive;font-size:1.25rem;color:var(--rose);margin-top:2px}
 .countdown:empty{display:none}
 .pick{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
 .pick button{flex:1 1 130px;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
@@ -253,7 +239,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
       <a class="act alt needs" id="dir" target="_blank" rel="noopener">Get directions</a>
       <a class="act wa" id="wa" target="_blank" rel="noopener">Reply on WhatsApp</a>
     </div>
-    <div class="stub"><svg class="bars" id="bars" viewBox="0 0 120 38" preserveAspectRatio="none" aria-hidden="true"></svg><div class="stubtxt"><b>Table for two</b><span id="serial"></span></div></div>
   </div>
   <div class="sign" id="sign"></div>
 </section>
@@ -384,18 +369,9 @@ function sayYes(){
 
 /* ---------- Ticket ---------- */
 const initial = s => (s.trim()[0] || '').toUpperCase();
-const initials = () => {
-  const pts = [[100,82],[70,62],[50,42],[48,22],[62,10],[80,10],[94,20],[100,28],[106,20],[120,10],[138,10],[152,22],[150,42],[130,62]];
-  const big = {3:1, 11:1};
-  let g = '', i = 0;
-  pts.forEach(([x,y], k) => { const r = big[k] ? 3.4 : (k % 2 ? 1.6 : 2.2); if(big[k]) g += '<circle class="glow" cx="'+x+'" cy="'+y+'" r="9"/>'; g += '<g class="tw" style="animation-delay:'+(k*.25)+'s"><circle class="star" cx="'+x+'" cy="'+y+'" r="'+r+'" style="animation-delay:'+(.3+k*.18)+'s"/></g>'; });
-  return '<svg class="const" viewBox="0 0 200 92" aria-hidden="true"><polyline pathLength="1" points="' + pts.concat([pts[0]]).map(q => q.join(',')).join(' ') + '"/>' + g
-    + '<text x="28" y="27" text-anchor="middle">' + initial(C.from) + '</text><text x="172" y="27" text-anchor="middle">' + initial(C.to) + '</text></svg>';
-};
+const initials = () => '<div class="av">' + initial(C.from) + '</div><span class="amp">&amp;</span><div class="av">' + initial(C.to) + '</div>';
 function buildDuo(){
   const duo = document.getElementById('duo');
-  const head = duo.parentNode;
-  if(!head.querySelector('.dot')) for(let i=0;i<26;i++){ const d = document.createElement('i'); d.className = 'dot'; const z = 1 + Math.random()*1.6; d.style.cssText = 'left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;opacity:'+(.3+Math.random()*.6)+';animation-delay:'+(-Math.random()*3)+'s'; head.insertBefore(d, head.firstChild) }
   if(C.photo){
     const img = new Image(); img.className = 'photo'; img.alt = 'Us'; img.src = C.photo;
     img.onerror = () => { duo.innerHTML = initials() };
@@ -419,27 +395,12 @@ function times(){
   return [f(start), f(end)];
 }
 
-let cdTimer;
-function startDate(){ const t = C.time || defTime(meal || 'dinner'); const [h,m] = t.split(':').map(Number); const d = new Date(day + 'T00:00:00'); d.setHours(isNaN(h)?19:h, m||0, 0, 0); return d }
-function tick(){
-  const el = document.getElementById('countdown');
-  if(!day){ el.textContent = ''; return }
-  const ms = startDate() - new Date();
-  if(ms <= 0){ el.textContent = 'It is time.'; return }
-  const q = Math.floor(ms/1000), d = Math.floor(q/86400), h = Math.floor(q%86400/3600), m = Math.floor(q%3600/60), sec = q%60;
-  el.textContent = (d ? d + (d === 1 ? ' day, ' : ' days, ') : '') + h + ' hours, ' + m + ' minutes and ' + sec + ' seconds to go.';
-}
-function drawStub(){
-  const svg = document.getElementById('bars'); let x = 0, out = '', seed = (C.from + C.to + (day || 'x')).toLowerCase();
-  for(let i = 0; x < 120; i++){ const c = seed.charCodeAt(i % seed.length) + i*7, w = 1 + c % 3; if(i % 2 === 0) out += '<rect x="'+x+'" y="0" width="'+w+'" height="38" fill="#6e1a38"/>'; x += w + 1 }
-  svg.innerHTML = out;
-  document.getElementById('serial').textContent = day ? fmtDay(day,false).split(' ').map((w,i) => i === 2 ? w.slice(0,3) : w).join(' ').replace(/^(\w{3})\w*/, '$1') : 'Reserved';
-}
 function build(){
-  buildDuo(); drawStub();
+  buildDuo();
   document.getElementById('tTitle').textContent = meal ? cap(meal) + ', you and me' : 'You and me';
   document.getElementById('tWhen').textContent = when();
-  clearInterval(cdTimer); tick(); if(day) cdTimer = setInterval(tick, 1000);
+  const n = day ? sleeps(day) : -1;
+  document.getElementById('countdown').textContent = n < 0 ? '' : n === 0 ? 'That is today.' : n === 1 ? 'That is tomorrow.' : 'That is ' + n + ' sleeps away.';
 
   /* day picker (only when more than one date was offered) */
   const dp = document.getElementById('dayPick');
@@ -518,14 +479,6 @@ function loop(){
   parts = parts.filter(p => p.life > 0 && p.y < cv.height + 40);
   if(parts.length) requestAnimationFrame(loop); else {running = false; cx.clearRect(0,0,cv.width,cv.height)}
 }
-
-/* a few petals follow a finger or cursor */
-let lastTrail = 0;
-addEventListener('pointermove', e => {
-  const n = performance.now(); if(n - lastTrail < 50) return; lastTrail = n;
-  parts.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*1.4,vy:Math.random()*.8+.3,g:.04,s:Math.random()*8+8,r:Math.random()*6,vr:(Math.random()-.5)*.2,petal:Math.random()<.5,c:colours[(Math.random()*colours.length)|0],life:70});
-  if(!running){ running = true; requestAnimationFrame(loop) }
-});
 </script>
 </body>
 </html>
