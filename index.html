@@ -8,12 +8,15 @@
 <style>
 /*
   HOW TO REUSE THIS PAGE
-  Change the details in the link, no editing needed. Example:
-  yoursite.com/?to=Amina&from=Phellep&date=2026-10-31&time=19:00&meal=dinner
-  &venue=The%20Stellenbosch%20Hotel&address=Windhoek&dress=Smart%20casual
-  &phone=264811234567&note=I%20booked%20the%20corner%20table
-  Optional: &photo=us.jpg (only if you ever have one) and &reveal=0 to skip the venue surprise.
-  Leave meal out (or use meal=choose) to let her pick lunch or dinner.
+  Everything comes from the link, no editing needed. Example:
+  ?to=Rejoice&from=Phellep&days=2026-10-23,2026-10-24&meal=dinner
+  &venue=Name%20of%20place&address=Windhoek&lat=-22.56&lng=17.08&phone=264811234567
+  &note=...&dress=...&sub=...
+  days   : one or more dates (YYYY-MM-DD). Two or more lets her choose.
+  meal   : lunch, dinner, or leave out so she chooses.
+  venue  : leave out while undecided, the page says so honestly.
+  lat/lng: optional exact pin for the map (right click the spot in Google Maps).
+  reveal : 0 skips the "tap to reveal" step.  photo : optional image.
 */
 :root{--rose:#e8456b;--deep:#7a1f3d;--blush:#ffe3ea;--cream:#fff8f3;--gold:#c9a24b}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -63,8 +66,8 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .row .ic{font-size:1.4rem;width:32px;text-align:center}
 .row b{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
 .row span{font-size:1rem}
-.pick{display:flex;gap:10px;margin-top:6px}
-.pick button{flex:1;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
+.pick{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.pick button{flex:1 1 130px;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
 .pick button.on{background:var(--rose);color:#fff}
 .note{font-family:'Caveat',cursive;background:var(--blush);padding:14px 16px;border-radius:12px;font-size:1.3rem;line-height:1.3}
 .actions{display:grid;gap:10px;padding:0 24px 24px}
@@ -72,6 +75,10 @@ button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weig
 .act:hover{transform:translateY(-2px)}
 .act.alt{background:var(--blush);color:var(--deep)}
 .act.wa{background:#25a55f}
+.mapwrap{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(122,31,61,.15);height:200px;background:var(--blush)}
+.mapwrap iframe{width:100%;height:100%;border:0;display:block}
+.lockhint{padding:0 24px 14px;font-size:.88rem;opacity:.75;text-align:center}
+.lockhint:empty{display:none}
 .sign{margin-top:18px;font-family:'Caveat',cursive;font-size:1.6rem;opacity:.85}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 
@@ -129,17 +136,20 @@ button,.act{min-height:48px;touch-action:manipulation}
 <!-- 3. Details -->
 <section class="screen" id="s3">
   <div class="ticket">
-    <div class="t-head"><div class="duo" id="duo"></div><small>Admit two</small><h2 id="tTitle">It's a date!</h2></div>
+    <div class="t-head"><div class="duo" id="duo"></div><small>For two</small><h2 id="tTitle"></h2></div>
     <div class="t-body">
-      <div class="row"><div class="ic">📅</div><div><b>When</b><span id="tWhen"></span></div></div>
+      <div class="row"><div class="ic">📅</div><div style="width:100%"><b>When</b><span id="tWhen"></span>
+        <div class="pick" id="dayPick" style="display:none"></div></div></div>
       <div class="row" id="mealRow" style="display:none"><div class="ic">🍽️</div><div style="width:100%"><b>Your choice</b>
         <div class="pick"><button data-m="lunch">☀️ Lunch</button><button data-m="dinner">🌙 Dinner</button></div></div></div>
       <div class="row" id="whereRow"><div class="ic">📍</div><div style="width:100%"><b>Where</b>
         <button class="revealbtn" id="revealBtn">🔒 Tap to reveal the venue</button>
         <span class="venue-name" id="tWhere"></span></div></div>
-      <div class="row"><div class="ic">👗</div><div><b>Dress code</b><span id="tDress"></span></div></div>
-      <div class="note" id="tNote"></div>
+      <div class="mapwrap" id="mapWrap" style="display:none"><iframe id="mapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map of the venue"></iframe></div>
+      <div class="row" id="dressRow"><div class="ic">👗</div><div><b>Dress code</b><span id="tDress"></span></div></div>
+      <div class="note" id="tNote" style="display:none"></div>
     </div>
+    <div class="lockhint" id="lockHint"></div>
     <div class="actions">
       <a class="act needs" id="gcal" target="_blank" rel="noopener">📆 Add to Google Calendar</a>
       <a class="act alt needs" id="ics" href="#">⬇️ Download for Apple or Outlook</a>
@@ -154,23 +164,26 @@ button,.act{min-height:48px;touch-action:manipulation}
 const P = new URLSearchParams(location.search);
 const g = (k, d) => (P.get(k) || d).trim();
 
-/* ---------- Details (defaults, override through the link) ---------- */
-function nextSaturday(){const d=new Date();d.setDate(d.getDate()+((6-d.getDay()+7)%7||7));return d.toISOString().slice(0,10)}
+/* ---------- Details (set through the link) ---------- */
 const C = {
-  to: g('to','Beautiful'), from: g('from','Someone who likes you a lot'),
-  date: g('date', nextSaturday()), meal: g('meal','choose'), time: g('time',''),
-  venue: g('venue','A lovely place (a surprise)'), address: g('address',''),
-  map: g('map',''), dress: g('dress','Whatever makes you feel gorgeous'),
-  phone: g('phone','').replace(/\D/g,''),
-  photo: g('photo',''), reveal: g('reveal','1'),
-  note: g('note','No pressure to dress up for me. Just bring your smile and your appetite.')
+  to: g('to','you'), from: g('from','me'),
+  days: g('days', g('date','')).split(',').map(x=>x.trim()).filter(Boolean),
+  meal: g('meal','choose'), time: g('time',''),
+  venue: g('venue',''), address: g('address',''), map: g('map',''),
+  dress: g('dress',''), phone: g('phone','').replace(/\D/g,''),
+  photo: g('photo',''), lat: g('lat',''), lng: g('lng',''), reveal: g('reveal','1'),
+  sub: g('sub','Just the two of us. I would really like that.'),
+  note: g('note','')
 };
 let meal = C.meal === 'lunch' || C.meal === 'dinner' ? C.meal : null;
+let day = C.days.length === 1 ? C.days[0] : null;
+const hasVenue = !!C.venue;
 const defTime = m => m === 'lunch' ? '13:00' : '19:00';
+const fmtDay = (d, long) => { const x = new Date(d + 'T12:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', long ? {weekday:'long',day:'numeric',month:'long',year:'numeric'} : {weekday:'long',day:'numeric',month:'long'}) };
+const mealWord = () => meal || 'dinner';
 
 /* ---------- Background hearts ---------- */
 const fl = document.getElementById('floaters');
-['💗','💕','🌸','✨','💖','🌹'].forEach((e,i)=>{});
 for(let i=0;i<22;i++){const s=document.createElement('span');s.textContent=['💗','💕','🌸','✨','💖','🌹'][i%6];
   s.style.left=Math.random()*100+'vw';s.style.fontSize=(14+Math.random()*22)+'px';
   s.style.animationDuration=(9+Math.random()*12)+'s';s.style.animationDelay=(-Math.random()*20)+'s';fl.appendChild(s)}
@@ -178,8 +191,8 @@ for(let i=0;i<22;i++){const s=document.createElement('span');s.textContent=['�
 /* ---------- Screens ---------- */
 const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)};
 document.getElementById('toLine').textContent = 'For ' + C.to;
-document.getElementById('qTitle').textContent = C.to + ', will you go on a date with me?';
-document.getElementById('qSub').textContent = 'I promise good food, good company, and at least one terrible joke.';
+document.getElementById('qTitle').textContent = C.to + ', can I take you out' + (meal ? ' for ' + meal : '') + '?';
+document.getElementById('qSub').textContent = C.sub;
 
 document.getElementById('env').onclick = function(){
   this.classList.add('open'); setTimeout(()=>show('s2'),900);
@@ -187,18 +200,18 @@ document.getElementById('env').onclick = function(){
 
 /* ---------- The runaway No button ---------- */
 const no = document.getElementById('no'), yes = document.getElementById('yes'), taunt = document.getElementById('taunt');
-const taunts = ['Are you sure? 🥺','Think about the dessert though 🍰','That button seems to be broken…','My heart just did a little cry 💔','I will bring snacks, just saying','The No button is shy, try Yes 😌','Look how big Yes is getting!','Last chance to say yes, no pressure…'];
-const noLabels = ['No','Hmm…','Really?','Please?','Pretty please?','Okay fine, yes 🙈'];
+const taunts = ['Are you sure? 🥺','Eish, that button is not working today','Try the other one, it is bigger','I will pay, just saying','Come on, ' + C.to + '…','I can see you smiling','Okay, last chance to be reasonable'];
+const noLabels = ['No','Hmm','Really?','Please?','Okay, fine, yes 🙈'];
 let tries = 0, scale = 1, lastDodge = 0;
 function dodge(e){
   if(e){e.preventDefault()}
-  const now = Date.now(); if(now - lastDodge < 350) return; lastDodge = now; /* one dodge per touch, even though phones fire several events */
+  const now = Date.now(); if(now - lastDodge < 350) return; lastDodge = now; /* one dodge per touch, phones fire several events */
   tries++; scale = Math.min(scale + .18, innerWidth < 500 ? 1.7 : 2.6);
   yes.style.transform = `scale(${scale})`;
   yes.style.margin = (scale*8)+'px';
   taunt.textContent = taunts[(tries-1) % taunts.length];
   no.textContent = noLabels[Math.min(tries, noLabels.length-1)];
-  if(tries >= 7){ no.classList.remove('run'); no.style.left=no.style.top=''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform='scale(1.3)'; return }
+  if(tries >= 5){ no.classList.remove('run'); no.style.left=no.style.top=''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform='scale(1.3)'; return }
   const w = no.offsetWidth, h = no.offsetHeight;
   no.classList.add('run');
   no.style.left = Math.max(8, Math.random()*(innerWidth - w - 16)) + 'px';
@@ -210,28 +223,11 @@ no.addEventListener('touchstart', dodge, {passive:false});
 no.onclick = dodge;
 yes.onclick = sayYes;
 
-/* ---------- Yes! ---------- */
-function sayYes(){
-  burst(); show('s3'); build(); setTimeout(burst, 700);
-}
+function sayYes(){ burst(); show('s3'); build(); setTimeout(burst, 700); }
 
-function when(){
-  const d = new Date(C.date + 'T12:00:00');
-  const ds = isNaN(d) ? C.date : d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  if(!meal) return ds + ' (lunch or dinner, you decide)';
-  const t = C.time || defTime(meal);
-  return `${ds} at ${t} (${meal})`;
-}
-function times(){
-  const t = C.time || defTime(meal || 'dinner');
-  const [h,m] = t.split(':').map(Number);
-  const start = new Date(C.date + 'T00:00:00'); start.setHours(h||19, m||0, 0, 0);
-  const end = new Date(start.getTime() + 2.5*3600*1000);
-  const f = d => d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';
-  return [f(start), f(end)];
-}
-/* ---------- Photo or initials, and venue reveal ---------- */
+/* ---------- Ticket ---------- */
 const initial = s => (s.trim()[0] || '♥').toUpperCase();
+const initials = () => `<div class="av">${initial(C.from)}</div><div class="hrt">💕</div><div class="av">${initial(C.to)}</div>`;
 function buildDuo(){
   const duo = document.getElementById('duo');
   if(C.photo){
@@ -240,42 +236,82 @@ function buildDuo(){
     duo.appendChild(img);
   } else duo.innerHTML = initials();
 }
-const initials = () => `<div class="av">${initial(C.from)}</div><div class="hrt">💕</div><div class="av">${initial(C.to)}</div>`;
+let revealed = C.reveal === '0' || !hasVenue;
 
-let revealed = C.reveal === '0';
-function applyReveal(){
-  document.getElementById('whereRow').classList.toggle('revealed', revealed);
-  document.querySelector('.actions').classList.toggle('locked', !revealed);
+function when(){
+  const dayTxt = day ? fmtDay(day, true) : (C.days.length ? 'Friday or Saturday, you choose' : 'Date to be agreed');
+  const mealTxt = meal ? ' (' + meal + ')' : '';
+  if(!day || !meal) return dayTxt + (meal ? ', ' + meal : '') + (day && !meal ? ', lunch or dinner' : '');
+  return dayTxt + ' at ' + (C.time || defTime(meal)) + mealTxt;
+}
+function times(){
+  const t = C.time || defTime(meal || 'dinner');
+  const [h,m] = t.split(':').map(Number);
+  const start = new Date(day + 'T00:00:00'); start.setHours(isNaN(h)?19:h, m||0, 0, 0);
+  const end = new Date(start.getTime() + 2.5*3600*1000);
+  const f = d => d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';
+  return [f(start), f(end)];
 }
 
 function build(){
-  buildDuo(); applyReveal();
-  document.getElementById('revealBtn').onclick = () => { revealed = true; applyReveal(); burst(90); };
+  buildDuo();
+  document.getElementById('tTitle').textContent = meal === 'lunch' ? 'Lunch, you and me' : meal === 'dinner' ? 'Dinner, you and me' : 'You and me';
   document.getElementById('tWhen').textContent = when();
-  document.getElementById('tWhere').textContent = C.venue + (C.address ? ', ' + C.address : '');
-  document.getElementById('tDress').textContent = C.dress;
-  document.getElementById('tNote').textContent = '“' + C.note + '”';
-  document.getElementById('sign').textContent = 'Yours, ' + C.from + ' 💌';
+
+  /* day picker (only when more than one date was offered) */
+  const dp = document.getElementById('dayPick');
+  if(C.days.length > 1){
+    dp.style.display = 'flex'; dp.innerHTML = '';
+    C.days.forEach(d => { const b = document.createElement('button'); b.textContent = fmtDay(d,false).replace(/,? 2026$/,''); b.classList.toggle('on', d === day); b.onclick = () => { day = d; build(); burst(40) }; dp.appendChild(b) });
+  }
+  /* meal picker */
   document.getElementById('mealRow').style.display = meal ? 'none' : 'flex';
-  document.querySelectorAll('.pick button').forEach(b => {
-    b.classList.toggle('on', b.dataset.m === meal);
-    b.onclick = () => { meal = b.dataset.m; build(); burst(40); };
-  });
-  const [s,e] = times();
-  const title = 'Date with ' + C.from + ' 💕';
+  document.querySelectorAll('.pick button[data-m]').forEach(b => { b.classList.toggle('on', b.dataset.m === meal); b.onclick = () => { meal = b.dataset.m; build(); burst(40) } });
+
+  /* venue */
+  const where = document.getElementById('tWhere'), rb = document.getElementById('revealBtn'), wr = document.getElementById('whereRow');
+  if(!hasVenue){ where.textContent = 'Still choosing the spot. You will be the first to know.'; wr.classList.add('revealed'); rb.style.display = 'none'; }
+  else { where.textContent = C.venue + (C.address ? ', ' + C.address : ''); wr.classList.toggle('revealed', revealed); rb.onclick = () => { revealed = true; build(); burst(90) } }
+
+  /* map appears with the venue, once revealed */
+  const mw = document.getElementById('mapWrap');
+  if(hasVenue && revealed){
+    mw.style.display = 'block';
+    const q = (C.lat && C.lng) ? C.lat + ',' + C.lng : C.venue + (C.address ? ', ' + C.address : '');
+    const fr = document.getElementById('mapFrame'), src = 'https://maps.google.com/maps?q=' + encodeURIComponent(q) + '&z=16&output=embed';
+    if(fr.getAttribute('src') !== src) fr.setAttribute('src', src);
+  } else mw.style.display = 'none';
+  document.getElementById('tDress').textContent = C.dress;
+  document.getElementById('dressRow').style.display = C.dress ? 'flex' : 'none';
+  const note = document.getElementById('tNote');
+  if(C.note){ note.style.display = 'block'; note.textContent = C.note } else note.style.display = 'none';
+  document.getElementById('sign').textContent = 'Yours, ' + C.from;
+
+  /* calendar and directions unlock once there is a day, a venue and it has been revealed */
+  const ready = hasVenue && revealed && !!day;
+  document.querySelector('.actions').classList.toggle('locked', !ready);
+  const hint = document.getElementById('lockHint');
+  hint.textContent = ready ? '' : !day ? 'Pick a day above and the calendar buttons will appear.' : !hasVenue ? 'The calendar and directions appear once I have chosen the venue.' : 'Reveal the venue to unlock the calendar.';
+
   const loc = C.venue + (C.address ? ', ' + C.address : '');
-  const det = C.note + ' Dress code: ' + C.dress;
-  document.getElementById('gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + s + '/' + e + '&location=' + encodeURIComponent(loc) + '&details=' + encodeURIComponent(det);
-  document.getElementById('ics').onclick = ev => {
-    ev.preventDefault();
-    const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Date Invite//EN','BEGIN:VEVENT','UID:' + Date.now() + '@dateinvite','DTSTAMP:' + s,'DTSTART:' + s,'DTEND:' + e,'SUMMARY:' + title,'LOCATION:' + loc.replace(/,/g,'\\,'),'DESCRIPTION:' + det.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Date time soon!','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download = 'our-date.ics'; a.click();
-  };
-  const dir = document.getElementById('dir');
-  dir.href = C.map || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
-  const msg = `Yes! I'll be there on ${when()} at ${C.venue}. Can't wait 💖`;
-  const wa = document.getElementById('wa');
-  wa.href = (C.phone ? 'https://wa.me/' + C.phone : 'https://wa.me/') + '?text=' + encodeURIComponent(msg);
+  const title = mealWord().replace(/^./, c => c.toUpperCase()) + ' with ' + C.from;
+  const det = [C.note, C.dress && 'Dress code: ' + C.dress].filter(Boolean).join(' ');
+  if(day){
+    const [s,e] = times();
+    document.getElementById('gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + s + '/' + e + '&location=' + encodeURIComponent(loc) + '&details=' + encodeURIComponent(det);
+    document.getElementById('ics').onclick = ev => {
+      ev.preventDefault();
+      const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Invite//EN','BEGIN:VEVENT','UID:' + Date.now() + '@invite','DTSTAMP:' + s,'DTSTART:' + s,'DTEND:' + e,'SUMMARY:' + title,'LOCATION:' + loc.replace(/,/g,'\\,'),'DESCRIPTION:' + det.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Dinner soon','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download = 'dinner.ics'; a.click();
+    };
+  }
+  document.getElementById('dir').href = C.map || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
+
+  const dayShort = day ? fmtDay(day,false).split(' ')[0] : '';
+  const msg = day
+    ? `Hi ${C.from}, ${dayShort} works for me.` + (hasVenue ? ` See you at ${C.venue}.` : ' So where are we going? 😄')
+    : `Hi ${C.from}, I got your invite. Let me check which day suits me and I will tell you.`;
+  document.getElementById('wa').href = (C.phone ? 'https://wa.me/' + C.phone : 'https://wa.me/') + '?text=' + encodeURIComponent(msg);
 }
 
 /* ---------- Confetti ---------- */
