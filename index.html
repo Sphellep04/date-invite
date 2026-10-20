@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A little invitation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/*
+  HOW TO REUSE THIS PAGE
+  Change the details in the link, no editing needed. Example:
+  yoursite.com/?to=Amina&from=Phellep&date=2026-10-31&time=19:00&meal=dinner
+  &venue=The%20Stellenbosch%20Hotel&address=Windhoek&dress=Smart%20casual
+  &phone=264811234567&note=I%20booked%20the%20corner%20table
+  Optional: &photo=us.jpg (only if you ever have one) and &reveal=0 to skip the venue surprise.
+  Leave meal out (or use meal=choose) to let her pick lunch or dinner.
+*/
+:root{--rose:#e8456b;--deep:#7a1f3d;--blush:#ffe3ea;--cream:#fff8f3;--gold:#c9a24b}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Poppins',sans-serif;color:var(--deep);background:radial-gradient(circle at 20% 10%,#ffd3df 0,transparent 45%),radial-gradient(circle at 85% 90%,#ffc2d1 0,transparent 45%),var(--cream);overflow-x:hidden}
+.floaters{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.floaters span{position:absolute;bottom:-40px;opacity:.5;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+.screen{position:relative;z-index:1;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.screen.active{display:flex;animation:fade .8s ease}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h1,h2{font-family:'Playfair Display',serif;font-weight:600}
+.hint{margin-top:18px;font-size:.9rem;opacity:.7;animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.25}}
+
+/* envelope */
+.envelope{position:relative;width:min(300px,80vw);height:200px;background:#f7c6d2;border-radius:6px;cursor:pointer;box-shadow:0 18px 40px rgba(122,31,61,.25);transition:transform .3s}
+.envelope:hover{transform:scale(1.03)}
+.flap{position:absolute;top:0;left:0;width:100%;height:100px;background:#f0a9bc;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s;z-index:3}
+.envelope::before{content:"";position:absolute;inset:0;background:#fbd3dd;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);z-index:2;border-radius:6px}
+.seal{position:absolute;top:78px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:var(--rose);color:#fff;display:grid;place-items:center;font-size:20px;z-index:4;box-shadow:0 4px 10px rgba(0,0,0,.25);transition:opacity .3s}
+.envelope.open .flap{transform:rotateX(180deg);z-index:1}
+.envelope.open .seal{opacity:0}
+.to{font-family:'Playfair Display',serif;font-style:italic;font-size:1.3rem;margin-bottom:26px}
+
+/* question */
+.q h1{font-size:clamp(1.8rem,7vw,2.8rem);line-height:1.2;margin-bottom:10px}
+.q p{max-width:420px;margin-bottom:28px;font-weight:300}
+.emoji-big{font-size:4rem;margin-bottom:14px;animation:beat 1.2s infinite}
+@keyframes beat{50%{transform:scale(1.15)}}
+.btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:90px;flex-wrap:wrap}
+button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s}
+.yes{background:var(--rose);color:#fff;padding:14px 34px;font-size:1.05rem;box-shadow:0 8px 20px rgba(232,69,107,.4)}
+.yes:hover{transform:scale(1.06)}
+.no{background:#fff;color:var(--deep);padding:12px 26px;font-size:.95rem;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.no.run{position:fixed;z-index:50}
+.taunt{height:24px;margin-top:16px;font-size:.9rem;font-style:italic;opacity:.8}
+
+/* ticket */
+.ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(122,31,61,.22);overflow:hidden;text-align:left}
+.t-head{background:linear-gradient(135deg,var(--rose),#b02a56);color:#fff;padding:26px 24px;text-align:center}
+.t-head h2{font-size:1.7rem}
+.t-head small{opacity:.85;letter-spacing:.18em;text-transform:uppercase;font-size:.7rem}
+.t-body{padding:22px 24px;display:grid;gap:14px;position:relative}
+.t-body::before{content:"";position:absolute;top:-10px;left:0;right:0;border-top:2px dashed #f3c2cf}
+.row{display:flex;gap:14px;align-items:flex-start}
+.row .ic{font-size:1.4rem;width:32px;text-align:center}
+.row b{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rose)}
+.row span{font-size:1rem}
+.pick{display:flex;gap:10px;margin-top:6px}
+.pick button{flex:1;background:var(--blush);color:var(--deep);padding:10px;font-size:.9rem}
+.pick button.on{background:var(--rose);color:#fff}
+.note{font-family:'Playfair Display',serif;font-style:italic;background:var(--blush);padding:14px;border-radius:12px;font-size:.95rem}
+.actions{display:grid;gap:10px;padding:0 24px 24px}
+.act{display:block;text-align:center;text-decoration:none;background:var(--deep);color:#fff;padding:13px;border-radius:999px;font-size:.92rem;font-weight:600;transition:transform .2s}
+.act:hover{transform:translateY(-2px)}
+.act.alt{background:var(--blush);color:var(--deep)}
+.act.wa{background:#25a55f}
+.sign{margin-top:18px;font-family:'Playfair Display',serif;font-style:italic;opacity:.8}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+
+/* duo avatars / photo */
+.duo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+.av{width:58px;height:58px;border-radius:50%;background:#fff;color:var(--rose);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.duo .hrt{font-size:1.6rem;animation:beat 1.2s infinite}
+.photo{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+
+/* venue reveal */
+.revealbtn{background:linear-gradient(135deg,var(--gold),#e6c36a);color:#4a3200;padding:12px 18px;font-size:.92rem;width:100%;animation:glow 2s infinite}
+@keyframes glow{50%{box-shadow:0 0 0 8px rgba(201,162,75,.25)}}
+.venue-name{display:none;font-family:'Playfair Display',serif;font-size:1.25rem;animation:fade .8s ease}
+.revealed .venue-name{display:block}
+.revealed .revealbtn{display:none}
+.locked .needs{display:none}
+
+/* mobile polish */
+html,body{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+.screen{min-height:100vh;min-height:100dvh;padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom))}
+button,.act{min-height:48px;touch-action:manipulation}
+.no{touch-action:none;user-select:none;-webkit-user-select:none}
+.btns{max-width:100%;overflow:visible}
+@media (max-width:420px){
+  .t-head h2{font-size:1.45rem}
+  .t-body{padding:20px 18px}
+  .actions{padding:0 18px 20px}
+  .envelope{height:180px}
+}
+</style>
+</head>
+<body>
+<div class="floaters" id="floaters"></div>
+<canvas id="confetti"></canvas>
+
+<!-- 1. Envelope -->
+<section class="screen active" id="s1">
+  <div class="to" id="toLine"></div>
+  <div class="envelope" id="env"><div class="flap"></div><div class="seal">💌</div></div>
+  <div class="hint">Tap the envelope</div>
+</section>
+
+<!-- 2. Question -->
+<section class="screen q" id="s2">
+  <div class="emoji-big" id="bigEmoji">🌹</div>
+  <h1 id="qTitle"></h1>
+  <p id="qSub"></p>
+  <div class="btns" id="btns">
+    <button class="yes" id="yes">Yes, absolutely 💖</button>
+    <button class="no" id="no">No</button>
+  </div>
+  <div class="taunt" id="taunt"></div>
+</section>
+
+<!-- 3. Details -->
+<section class="screen" id="s3">
+  <div class="ticket">
+    <div class="t-head"><div class="duo" id="duo"></div><small>Admit two</small><h2 id="tTitle">It's a date!</h2></div>
+    <div class="t-body">
+      <div class="row"><div class="ic">📅</div><div><b>When</b><span id="tWhen"></span></div></div>
+      <div class="row" id="mealRow" style="display:none"><div class="ic">🍽️</div><div style="width:100%"><b>Your choice</b>
+        <div class="pick"><button data-m="lunch">☀️ Lunch</button><button data-m="dinner">🌙 Dinner</button></div></div></div>
+      <div class="row" id="whereRow"><div class="ic">📍</div><div style="width:100%"><b>Where</b>
+        <button class="revealbtn" id="revealBtn">🔒 Tap to reveal the venue</button>
+        <span class="venue-name" id="tWhere"></span></div></div>
+      <div class="row"><div class="ic">👗</div><div><b>Dress code</b><span id="tDress"></span></div></div>
+      <div class="note" id="tNote"></div>
+    </div>
+    <div class="actions">
+      <a class="act needs" id="gcal" target="_blank" rel="noopener">📆 Add to Google Calendar</a>
+      <a class="act alt needs" id="ics" href="#">⬇️ Download for Apple or Outlook</a>
+      <a class="act alt needs" id="dir" target="_blank" rel="noopener">🗺️ Get directions</a>
+      <a class="act wa" id="wa" target="_blank" rel="noopener">💬 Tell me you're coming</a>
+    </div>
+  </div>
+  <div class="sign" id="sign"></div>
+</section>
+
+<script>
+const P = new URLSearchParams(location.search);
+const g = (k, d) => (P.get(k) || d).trim();
+
+/* ---------- Details (defaults, override through the link) ---------- */
+function nextSaturday(){const d=new Date();d.setDate(d.getDate()+((6-d.getDay()+7)%7||7));return d.toISOString().slice(0,10)}
+const C = {
+  to: g('to','Beautiful'), from: g('from','Someone who likes you a lot'),
+  date: g('date', nextSaturday()), meal: g('meal','choose'), time: g('time',''),
+  venue: g('venue','A lovely place (a surprise)'), address: g('address',''),
+  map: g('map',''), dress: g('dress','Whatever makes you feel gorgeous'),
+  phone: g('phone','').replace(/\D/g,''),
+  photo: g('photo',''), reveal: g('reveal','1'),
+  note: g('note','No pressure to dress up for me. Just bring your smile and your appetite.')
+};
+let meal = C.meal === 'lunch' || C.meal === 'dinner' ? C.meal : null;
+const defTime = m => m === 'lunch' ? '13:00' : '19:00';
+
+/* ---------- Background hearts ---------- */
+const fl = document.getElementById('floaters');
+['💗','💕','🌸','✨','💖','🌹'].forEach((e,i)=>{});
+for(let i=0;i<22;i++){const s=document.createElement('span');s.textContent=['💗','💕','🌸','✨','💖','🌹'][i%6];
+  s.style.left=Math.random()*100+'vw';s.style.fontSize=(14+Math.random()*22)+'px';
+  s.style.animationDuration=(9+Math.random()*12)+'s';s.style.animationDelay=(-Math.random()*20)+'s';fl.appendChild(s)}
+
+/* ---------- Screens ---------- */
+const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)};
+document.getElementById('toLine').textContent = 'For ' + C.to;
+document.getElementById('qTitle').textContent = C.to + ', will you go on a date with me?';
+document.getElementById('qSub').textContent = 'I promise good food, good company, and at least one terrible joke.';
+
+document.getElementById('env').onclick = function(){
+  this.classList.add('open'); setTimeout(()=>show('s2'),900);
+};
+
+/* ---------- The runaway No button ---------- */
+const no = document.getElementById('no'), yes = document.getElementById('yes'), taunt = document.getElementById('taunt');
+const taunts = ['Are you sure? 🥺','Think about the dessert though 🍰','That button seems to be broken…','My heart just did a little cry 💔','I will bring snacks, just saying','The No button is shy, try Yes 😌','Look how big Yes is getting!','Last chance to say yes, no pressure…'];
+const noLabels = ['No','Hmm…','Really?','Please?','Pretty please?','Okay fine, yes 🙈'];
+let tries = 0, scale = 1, lastDodge = 0;
+function dodge(e){
+  if(e){e.preventDefault()}
+  const now = Date.now(); if(now - lastDodge < 350) return; lastDodge = now; /* one dodge per touch, even though phones fire several events */
+  tries++; scale = Math.min(scale + .18, innerWidth < 500 ? 1.7 : 2.6);
+  yes.style.transform = `scale(${scale})`;
+  yes.style.margin = (scale*8)+'px';
+  taunt.textContent = taunts[(tries-1) % taunts.length];
+  no.textContent = noLabels[Math.min(tries, noLabels.length-1)];
+  if(tries >= 7){ no.classList.remove('run'); no.style.left=no.style.top=''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform='scale(1.3)'; return }
+  const w = no.offsetWidth, h = no.offsetHeight;
+  no.classList.add('run');
+  no.style.left = Math.max(8, Math.random()*(innerWidth - w - 16)) + 'px';
+  no.style.top = Math.max(8, Math.random()*(innerHeight - h - 16)) + 'px';
+}
+no.addEventListener('pointerenter', dodge);
+no.addEventListener('pointerdown', dodge);
+no.addEventListener('touchstart', dodge, {passive:false});
+no.onclick = dodge;
+yes.onclick = sayYes;
+
+/* ---------- Yes! ---------- */
+function sayYes(){
+  burst(); show('s3'); build(); setTimeout(burst, 700);
+}
+
+function when(){
+  const d = new Date(C.date + 'T12:00:00');
+  const ds = isNaN(d) ? C.date : d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  if(!meal) return ds + ' (lunch or dinner, you decide)';
+  const t = C.time || defTime(meal);
+  return `${ds} at ${t} (${meal})`;
+}
+function times(){
+  const t = C.time || defTime(meal || 'dinner');
+  const [h,m] = t.split(':').map(Number);
+  const start = new Date(C.date + 'T00:00:00'); start.setHours(h||19, m||0, 0, 0);
+  const end = new Date(start.getTime() + 2.5*3600*1000);
+  const f = d => d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';
+  return [f(start), f(end)];
+}
+/* ---------- Photo or initials, and venue reveal ---------- */
+const initial = s => (s.trim()[0] || '♥').toUpperCase();
+function buildDuo(){
+  const duo = document.getElementById('duo');
+  if(C.photo){
+    const img = new Image(); img.className = 'photo'; img.alt = 'Us'; img.src = C.photo;
+    img.onerror = () => { duo.innerHTML = initials() };
+    duo.appendChild(img);
+  } else duo.innerHTML = initials();
+}
+const initials = () => `<div class="av">${initial(C.from)}</div><div class="hrt">💕</div><div class="av">${initial(C.to)}</div>`;
+
+let revealed = C.reveal === '0';
+function applyReveal(){
+  document.getElementById('whereRow').classList.toggle('revealed', revealed);
+  document.querySelector('.actions').classList.toggle('locked', !revealed);
+}
+
+function build(){
+  buildDuo(); applyReveal();
+  document.getElementById('revealBtn').onclick = () => { revealed = true; applyReveal(); burst(90); };
+  document.getElementById('tWhen').textContent = when();
+  document.getElementById('tWhere').textContent = C.venue + (C.address ? ', ' + C.address : '');
+  document.getElementById('tDress').textContent = C.dress;
+  document.getElementById('tNote').textContent = '“' + C.note + '”';
+  document.getElementById('sign').textContent = 'Yours, ' + C.from + ' 💌';
+  document.getElementById('mealRow').style.display = meal ? 'none' : 'flex';
+  document.querySelectorAll('.pick button').forEach(b => {
+    b.classList.toggle('on', b.dataset.m === meal);
+    b.onclick = () => { meal = b.dataset.m; build(); burst(40); };
+  });
+  const [s,e] = times();
+  const title = 'Date with ' + C.from + ' 💕';
+  const loc = C.venue + (C.address ? ', ' + C.address : '');
+  const det = C.note + ' Dress code: ' + C.dress;
+  document.getElementById('gcal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) + '&dates=' + s + '/' + e + '&location=' + encodeURIComponent(loc) + '&details=' + encodeURIComponent(det);
+  document.getElementById('ics').onclick = ev => {
+    ev.preventDefault();
+    const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Date Invite//EN','BEGIN:VEVENT','UID:' + Date.now() + '@dateinvite','DTSTAMP:' + s,'DTSTART:' + s,'DTEND:' + e,'SUMMARY:' + title,'LOCATION:' + loc.replace(/,/g,'\\,'),'DESCRIPTION:' + det.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Date time soon!','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download = 'our-date.ics'; a.click();
+  };
+  const dir = document.getElementById('dir');
+  dir.href = C.map || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc);
+  const msg = `Yes! I'll be there on ${when()} at ${C.venue}. Can't wait 💖`;
+  const wa = document.getElementById('wa');
+  wa.href = (C.phone ? 'https://wa.me/' + C.phone : 'https://wa.me/') + '?text=' + encodeURIComponent(msg);
+}
+
+/* ---------- Confetti ---------- */
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+let parts = [], running = false;
+function fit(){cv.width = innerWidth; cv.height = innerHeight} fit(); addEventListener('resize', fit);
+function burst(n=130){
+  for(let i=0;i<n;i++) parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-3,g:.35,r:Math.random()*10+10,t:['💖','💗','🌹','✨','💕'][i%5],life:110+Math.random()*50});
+  if(!running){running = true; requestAnimationFrame(loop)}
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.life--;cx.globalAlpha=Math.max(p.life/60,0);cx.font=p.r+'px serif';cx.fillText(p.t,p.x,p.y)});
+  parts = parts.filter(p=>p.life>0 && p.y<cv.height+40);
+  if(parts.length) requestAnimationFrame(loop); else {running = false; cx.clearRect(0,0,cv.width,cv.height)}
+}
+</script>
+</body>
+</html>
