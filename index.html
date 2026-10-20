@@ -19,7 +19,7 @@
   lat/lng: optional exact pin for the map.
   reveal : 0 skips the reveal step.   photo : optional image.
   music  : optional link to your own audio file (mp3). It replaces the YouTube song.
-  yt     : YouTube video id of the song (default is River Flows in You). ytstart= sets the start second. yt=off uses the built-in piano only.
+  yt     : YouTube video id of the song (default is River Flows in You). ytstart= sets the start second. yt=off means no music.
 */
 :root{--rose:#d93f68;--deep:#6e1a38;--blush:#ffe6ec;--cream:#fff8f3;--gold:#c9a24b;--ink:#4a1226}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -154,14 +154,7 @@ body.lit .sign{color:#f6dfe5}
   .floaters{display:none}
 }
 
-.musicbtn[hidden]{display:none}
-.musicbtn{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:60;display:flex;align-items:center;gap:7px;padding:9px 14px 9px 11px;border-radius:999px;border:1px solid rgba(217,63,107,.28);background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--deep);font:500 .8rem 'DM Sans',sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
-.musicbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
-.musicbtn .x{display:block}.musicbtn .w1,.musicbtn .w2{display:none}
-.musicbtn.on .x{display:none}.musicbtn.on .w1,.musicbtn.on .w2{display:block}
-.musicbtn.on{background:var(--deep);color:#fff4f6;border-color:transparent}
-body.lit .musicbtn:not(.on){background:rgba(255,244,246,.14);color:#f6dfe5;border-color:rgba(255,255,255,.22)}
-/* ticket */
+body.lit /* ticket */
 .ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
 .t-head{background:linear-gradient(135deg,var(--rose),#a82a4f);color:#fff;padding:24px;text-align:center}
 .t-head h2{font-size:2.2rem;line-height:1.05}
@@ -228,7 +221,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
     <text id="stampMark" x="100" y="152" text-anchor="middle" font-size="22" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" letter-spacing="3"></text>
   </g></svg></div>
 <div class="candle" id="candle"></div>
-<button class="musicbtn" id="musicBtn" type="button" hidden aria-pressed="false" aria-label="Play music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.6L12 18.5v-13L7.6 9.5H4z" fill="currentColor" stroke="none"/><path class="w1" d="M15.2 9.2c1.1 1.6 1.1 4 0 5.6"/><path class="w2" d="M17.6 6.8c2.2 3 2.2 7.4 0 10.4"/><path class="x" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span id="musicTxt">Music</span></button>
 
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
@@ -365,121 +357,54 @@ function startLetter(){
 $id('paper').addEventListener('click', () => { const p = $id('paper'); if(!p.classList.contains('skip')){ p.classList.add('skip'); showAnswer() } });
 document.getElementById('letterMark').textContent = (C.from.trim()[0] || '').toUpperCase() + ' & ' + (C.to.trim()[0] || '').toUpperCase();
 let opened = false;
-/* ---------- Music: YouTube (River Flows in You) with a built-in piano as backup. music= uses your own file instead ---------- */
+/* ---------- Music: River Flows in You from YouTube, starts when she taps the envelope. music= uses your own file instead ---------- */
 const Music = (() => {
-  const url = g('music',''), btn = $id('musicBtn');
+  const url = g('music','');
   const YT_ID = url ? '' : g('yt','7maJOI3QMu0'), YT_START = +g('ytstart','10') || 0;
-  let useYT = !!YT_ID && YT_ID !== 'off';
-  let ctx, master, delay, timer, on = false, step = 0, nextT = 0, el = null, fade = null, ytp = null, ytReady = false, ytWant = false, ytState = -1, watchdog = null;
-  const hz = n => 440 * Math.pow(2, (n - 69) / 12);
-  /* Cmaj7, Am7, Fmaj7, G6 */
-  const prog = [[48,55,59,64],[45,52,60,64],[41,48,57,64],[43,50,59,64]];
-  const arp = [0,1,2,3,2,1,3,2], EIGHTH = .56;
-  function pluck(n, t, vel){
-    const g1 = ctx.createGain(), f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2400;
-    [['triangle',1,1],['sine',2,.25]].forEach(([type,mul,amp]) => {
-      const o = ctx.createOscillator(); o.type = type; o.frequency.value = hz(n) * mul;
-      const gg = ctx.createGain(); gg.gain.value = amp; o.connect(gg); gg.connect(g1); o.start(t); o.stop(t + 3);
-    });
-    g1.gain.setValueAtTime(0.0001, t); g1.gain.exponentialRampToValueAtTime(vel, t + .012); g1.gain.exponentialRampToValueAtTime(.0001, t + 2.6);
-    g1.connect(f); f.connect(master); f.connect(delay);
-  }
-  function pad(chord, t){
-    chord.slice(0,3).forEach(n => {
-      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = hz(n); o.detune.value = (Math.random() - .5) * 8;
-      const gg = ctx.createGain(); gg.gain.setValueAtTime(.0001, t); gg.gain.linearRampToValueAtTime(.035, t + 1.4); gg.gain.linearRampToValueAtTime(.0001, t + EIGHTH * 8 + .8);
-      o.connect(gg); gg.connect(master); o.start(t); o.stop(t + EIGHTH * 8 + 1);
-    });
-  }
-  function tick(){
-    while(nextT < ctx.currentTime + .4){
-      const bar = Math.floor(step / 8) % prog.length, i = step % 8, chord = prog[bar];
-      if(i === 0) pad(chord, nextT);
-      pluck(chord[arp[i]] + (arp[i] > 1 ? 12 : 0), nextT, i === 0 ? .2 : .1);
-      if(i === 0) pluck(chord[0] - 12, nextT, .16);
-      if(i === 4 && bar % 2 === 1) pluck(chord[3] + 12, nextT + .02, .09);
-      nextT += EIGHTH; step++;
-    }
-  }
-  /* volume handling for whichever source is playing */
-  const mode = () => (useYT && ytp) ? 'yt' : el ? 'el' : 'ctx';
-  function getVol(){ const m = mode(); return m === 'yt' ? ytp.getVolume() / 100 : m === 'el' ? el.volume : master.gain.value }
-  function setVol(v){ v = Math.max(0, Math.min(1, v)); const m = mode(); if(m === 'yt') ytp.setVolume(Math.round(v * 100)); else if(m === 'el') el.volume = v; else master.gain.value = v }
-  function ramp(to, ms, done){
+  let on = false, el = null, fade = null, ytp = null, ytReady = false, ytWant = false;
+  const mode = () => ytp ? 'yt' : 'el';
+  function getVol(){ return mode() === 'yt' ? ytp.getVolume() / 100 : el.volume }
+  function setVol(v){ v = Math.max(0, Math.min(1, v)); if(mode() === 'yt') ytp.setVolume(Math.round(v * 100)); else el.volume = v }
+  function ramp(to, ms){
     clearInterval(fade);
     const from = getVol(), t0 = performance.now();
-    fade = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); setVol(from + (to - from) * k); if(k >= 1){ clearInterval(fade); done && done() } }, 40);
+    fade = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); setVol(from + (to - from) * k); if(k >= 1) clearInterval(fade) }, 40);
   }
-  function setUI(){ btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on); btn.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); $id('musicTxt').textContent = on ? 'Playing' : 'Music' }
-  function initCtx(){
-    if(ctx) return true;
-    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return false;
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
-    delay = ctx.createDelay(1); delay.delayTime.value = .42; const fb = ctx.createGain(); fb.gain.value = .38;
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500;
-    delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(master);
-    return true;
-  }
-  function startPiano(){
-    if(!initCtx()){ on = false; setUI(); return }
-    ctx.resume(); nextT = ctx.currentTime + .15; clearInterval(timer); timer = setInterval(tick, 120); tick(); ramp(.7, 3000);
-  }
-  /* YouTube, through a tiny invisible player */
-  function ytFail(){
-    useYT = false; clearTimeout(watchdog); ytWant = false;
-    try{ ytp && ytp.stopVideo() }catch(e){}
-    if(on) startPiano();
-  }
-  function ytPlay(){
-    ytWant = false; ytp.setVolume(0); ytp.playVideo();
-    clearTimeout(watchdog); watchdog = setTimeout(() => { if(on && ytState !== 1) ytFail() }, 7000);
-  }
+  function ytPlay(){ ytWant = false; ytp.setVolume(0); ytp.playVideo() }
   function loadYT(){
-    if(!useYT) return;
+    if(!YT_ID || YT_ID === 'off') return;
     const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden';
     box.innerHTML = '<div id="ytplayer"></div>'; document.body.appendChild(box);
     window.onYouTubeIframeAPIReady = () => {
       const vars = { playsinline: 1, controls: 0, disablekb: 1, rel: 0, fs: 0, modestbranding: 1, start: YT_START };
       if(/^https?:$/.test(location.protocol)) vars.origin = location.origin;
-      ytp = new YT.Player('ytplayer', { width: 2, height: 2, videoId: YT_ID, playerVars: vars, events: {
-        onReady: () => { ytReady = true; if(ytWant && on) ytPlay() },
-        onStateChange: e => { ytState = e.data; if(e.data === 0){ ytp.seekTo(YT_START); ytp.playVideo() } if(e.data === 1 && on){ clearTimeout(watchdog); ramp(.8, 2500) } },
-        onError: () => ytFail()
+      new YT.Player('ytplayer', { width: 2, height: 2, videoId: YT_ID, playerVars: vars, events: {
+        onReady: e => { ytp = e.target; ytReady = true; if(ytWant && on) ytPlay() },
+        onStateChange: e => { if(e.data === 0){ ytp.seekTo(YT_START); ytp.playVideo() } if(e.data === 1 && on) ramp(.8, 2500) }
       } });
     };
-    const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => { useYT = false; if(on && ytWant) startPiano() }; document.head.appendChild(sc);
+    const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(sc);
   }
   function start(){
-    if(on) return; on = true; setUI();
+    if(on) return; on = true;
     if(url){
       if(!el){ el = new Audio(url); el.loop = true; el.volume = 0 }
-      el.play().catch(() => { on = false; setUI() }); ramp(.8, 2500); return;
+      el.play().catch(() => { on = false }); ramp(.8, 2500); return;
     }
-    if(useYT){
-      initCtx() && ctx.resume();            /* unlock sound inside her tap, in case we need the piano later */
-      if(ytReady) ytPlay(); else { ytWant = true; clearTimeout(watchdog); watchdog = setTimeout(() => { if(on && ytState !== 1) ytFail() }, 7000) }
-      return;
-    }
-    startPiano();
+    if(ytReady) ytPlay(); else ytWant = true;
   }
-  function stop(){
-    if(!on) return; on = false; ytWant = false; clearTimeout(watchdog); setUI();
-    const m = mode();
-    ramp(0, 700, () => { if(m === 'yt') ytp.pauseVideo(); else if(m === 'el') el.pause(); else { clearInterval(timer); ctx && ctx.suspend() } });
-  }
-  btn.onclick = () => on ? stop() : start();
   document.addEventListener('visibilitychange', () => {
-    if(!on) return; const m = mode();
-    if(document.hidden){ m === 'yt' ? ytp.pauseVideo() : m === 'el' ? el.pause() : ctx && ctx.suspend() }
-    else { m === 'yt' ? ytp.playVideo() : m === 'el' ? el.play().catch(()=>{}) : ctx && ctx.resume() }
+    if(!on) return;
+    if(document.hidden){ if(ytp) ytp.pauseVideo(); else if(el) el.pause() }
+    else { if(ytp) ytp.playVideo(); else if(el) el.play().catch(()=>{}) }
   });
   loadYT();
-  return { start, auto: true };
+  return { start };
 })();
 
 document.getElementById('env').onclick = function(){
   if(opened) return; opened = true;
-  if(Music.auto) Music.start();
+  Music.start();
   const env = this, s1 = document.getElementById('s1');
   s1.classList.add('started'); env.classList.add('opening');   /* seal cracks */
   setTimeout(() => { env.classList.add('open'); burst(26) }, T(800));   /* flap lifts, petals */
