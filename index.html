@@ -15,7 +15,7 @@
   &phone=264817854558&note=...&dress=...&sub=...
   days   : one or more dates (YYYY-MM-DD). Two or more lets her choose.
   meal   : lunch, dinner, or leave out so she chooses.
-  venue  : leave out while undecided, the page says so honestly.
+  venue  : set to Bossa, Maerua Mall for now. Use venue= with an empty value to hide it again.
   lat/lng: optional exact pin for the map.
   reveal : 0 skips the reveal step.   photo : optional image.
 */
@@ -258,7 +258,7 @@ const C = {
   to: g('to','Rejoice'), from: g('from','Phellep'),
   days: g('days', g('date','2026-10-23,2026-10-24')).split(',').map(x=>x.trim()).filter(Boolean),
   meal: g('meal','dinner'), time: g('time',''),
-  venue: g('venue',''), address: g('address',''), map: g('map',''),
+  venue: g('venue','Bossa'), address: g('address','Maerua Mall, Windhoek'), map: g('map',''),
   lat: g('lat',''), lng: g('lng',''),
   dress: g('dress',''), phone: g('phone','264817854558').replace(/\D/g,''),
   photo: g('photo',''), reveal: g('reveal','1'),
