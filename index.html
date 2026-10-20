@@ -115,12 +115,39 @@ h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes fillin{to{fill:rgba(217,63,104,.9)}}
 .q h1{font-size:clamp(2.2rem,9vw,3.3rem);line-height:1.1;margin-bottom:12px;min-height:2.3em;max-width:560px}
-.q p{max-width:420px;margin-bottom:26px;font-weight:300;font-size:1.02rem}
 .btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:64px;flex-wrap:wrap;max-width:100%}
 button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s;min-height:48px;touch-action:manipulation}
 .no{background:#fff;color:var(--deep);padding:13px 28px;font-size:.98rem;border:1.5px solid #f2c4d1;box-shadow:0 3px 0 #f2c4d1,0 8px 16px rgba(110,26,56,.08);touch-action:none;user-select:none;-webkit-user-select:none}
 .no.run{position:fixed;z-index:50}
 .taunt{height:24px;margin-top:14px;font-family:'Instrument Serif',serif;font-style:italic;font-size:1.15rem;opacity:.85}
+
+/* the letter */
+.paper{position:relative;width:min(420px,92vw);background-color:#fffdf8;background-image:linear-gradient(rgba(201,162,75,.07) 1px,transparent 1px);background-size:100% 32px;background-position:0 14px;border-radius:6px;padding:30px 26px 28px;box-shadow:0 18px 40px rgba(110,26,56,.2);text-align:left;transform:rotate(-.5deg);cursor:pointer}
+.kicker{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rose);font-weight:600;opacity:0;margin-bottom:16px}
+.salute{font-family:'Caveat',cursive;font-size:2.05rem;line-height:1.1;margin-bottom:8px;color:var(--ink)}
+.body p{font-family:'Caveat',cursive;font-size:1.5rem;line-height:1.3;margin:0 0 10px;color:var(--ink);max-width:none;font-weight:500}
+.paper h1{font-size:clamp(2rem,8.6vw,2.6rem);line-height:1.12;min-height:0;margin:16px 0 0;text-align:center;max-width:none}
+.w{display:inline-block;opacity:0;transform:translateY(5px);filter:blur(2px)}
+.go .w{animation:inkin .55s ease forwards;animation-delay:var(--d)}
+.go .kicker{animation:inkin .8s forwards}
+@keyframes inkin{to{opacity:1;transform:none;filter:none}}
+.skip .w{opacity:1;transform:none;filter:none;animation:none}
+.skip .kicker{opacity:1;animation:none}
+.answer{display:flex;flex-direction:column;align-items:center;margin-top:22px;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .9s,transform .9s}
+.answer.ready{opacity:1;transform:none;pointer-events:auto}
+#s2.stamping .paper{opacity:.12;transition:opacity .4s}
+
+/* candlelight after she says yes */
+.candle{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 2.2s ease;background:radial-gradient(ellipse at 50% 36%,rgba(255,176,107,.36) 0,rgba(255,176,107,0) 58%),radial-gradient(circle at 88% 96%,#6b1630 0,transparent 55%),linear-gradient(180deg,#3a0e22,#561430 55%,#2a0a1a)}
+.candle::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 36%,rgba(255,200,150,.28),transparent 52%);animation:flicker 3.6s infinite}
+@keyframes flicker{0%,100%{opacity:.55}30%{opacity:1}55%{opacity:.7}80%{opacity:.95}}
+body.lit .candle{opacity:1}
+body.lit .sign{color:#f6dfe5}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .floaters{display:none}
+}
 
 /* ticket */
 .ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
@@ -186,6 +213,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
     <text x="100" y="120" text-anchor="middle" font-size="74" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" font-style="italic">Yes</text>
     <text id="stampMark" x="100" y="152" text-anchor="middle" font-size="22" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" letter-spacing="3"></text>
   </g></svg></div>
+<div class="candle" id="candle"></div>
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
 
@@ -207,18 +235,23 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 
 <!-- 2. Question -->
 <section class="screen q" id="s2">
-  <svg class="drawheart" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></svg>
-  <h1 id="qTitle"></h1>
-  <p id="qSub"></p>
-  <div class="meet" id="meet">
-    <div class="mline"></div><div class="mfill" id="mfill"></div>
-    <div class="hrt his" id="his"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hisL"></span></div>
-    <div class="hrt hers" id="hers" role="button" tabindex="0" aria-label="Bring our hearts together to say yes"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hersL"></span></div>
-    <div class="pr" id="pr"></div>
+  <div class="paper" id="paper">
+    <div class="kicker" id="kicker"></div>
+    <div class="salute" id="salute"></div>
+    <div class="body" id="body"></div>
+    <h1 id="qTitle"></h1>
   </div>
-  <div class="meet-hint">Bring our hearts together</div>
-  <div class="btns" id="btns"><button class="no" id="no">No</button></div>
-  <div class="taunt" id="taunt"></div>
+  <div class="answer" id="answer">
+    <div class="meet" id="meet">
+      <div class="mline"></div><div class="mfill" id="mfill"></div>
+      <div class="hrt his" id="his"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hisL"></span></div>
+      <div class="hrt hers" id="hers" role="button" tabindex="0" aria-label="Bring our hearts together to say yes"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hersL"></span></div>
+      <div class="pr" id="pr"></div>
+    </div>
+    <div class="meet-hint">Bring our hearts together</div>
+    <div class="btns" id="btns"><button class="no" id="no">No</button></div>
+    <div class="taunt" id="taunt"></div>
+  </div>
 </section>
 
 <!-- 3. Details -->
@@ -249,6 +282,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 </section>
 
 <script>
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const T = ms => RM ? Math.round(ms/5) : ms;
 const P = new URLSearchParams(location.search);
 const g = (k, d) => (P.get(k) || d).trim();
 const HEART = 'M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z';
@@ -262,7 +297,9 @@ const C = {
   lat: g('lat',''), lng: g('lng',''),
   dress: g('dress',''), phone: g('phone','264817854558').replace(/\D/g,''),
   photo: g('photo',''), reveal: g('reveal','1'),
-  sub: g('sub','Just the two of us. I would really like that.'),
+  kicker: g('kicker','A personal invitation'), salute: g('salute','To someone special,'),
+  msg: g('msg',"I have a question for you…|I'd love to spend some time with you, share a beautiful evening, and create a memory that belongs to just us.|Nothing fancy. Just good food, good company, and you."),
+  ask: g('ask','Will you go on a date with me?'),
   note: g('note','')
 };
 let meal = C.meal === 'lunch' || C.meal === 'dinner' ? C.meal : null;
@@ -275,7 +312,7 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 /* ---------- Drifting hearts and petals ---------- */
 const fl = document.getElementById('floaters');
-for(let i=0;i<20;i++){
+for(let i=0;i<(RM?0:20);i++){
   const sz = 14 + Math.random()*24, petal = i % 3 === 0;
   const el = document.createElementNS('http://www.w3.org/2000/svg','svg');
   el.setAttribute('viewBox','0 0 24 24'); el.setAttribute('width',sz); el.setAttribute('height',sz);
@@ -287,29 +324,41 @@ for(let i=0;i<20;i++){
 }
 
 /* ---------- Screens ---------- */
-const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){} if(id==='s2'){ measure(); setT(base) }};
+const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){} if(id==='s2'){ measure(); setT(base) } if(id==='s3') document.body.classList.add('lit') };
 document.getElementById('toLine').textContent = 'For ' + C.to;
-const titleText = 'Hey, can I take you out' + (meal ? ' for ' + meal : '') + '?';
-const qTitle = document.getElementById('qTitle');
-qTitle.setAttribute('aria-label', titleText);
-document.getElementById('qSub').textContent = C.sub;
-let typer;
-function typeTitle(){
-  clearInterval(typer); let i = 0; qTitle.textContent = '';
-  typer = setInterval(() => { qTitle.textContent = titleText.slice(0, ++i); if(i >= titleText.length) clearInterval(typer) }, 45);
+const $id = id => document.getElementById(id);
+function words(el, text, per, t0){
+  el.innerHTML = ''; let t = t0; const list = text.split(/\s+/).filter(Boolean);
+  list.forEach((w, i) => { const sp = document.createElement('span'); sp.className = 'w'; sp.style.setProperty('--d', t.toFixed(2) + 's'); sp.textContent = w; el.appendChild(sp); if(i < list.length - 1) el.appendChild(document.createTextNode(' ')); t += per; });
+  return t;
 }
+let letterTimer;
+function showAnswer(){ clearTimeout(letterTimer); $id('answer').classList.add('ready'); if(typeof measure === 'function') measure() }
+function startLetter(){
+  const paper = $id('paper'); paper.classList.remove('go','skip'); $id('answer').classList.remove('ready');
+  $id('kicker').textContent = C.kicker;
+  let t = .6;
+  t = words($id('salute'), C.salute, .14, t) + .3;
+  const body = $id('body'); body.innerHTML = '';
+  C.msg.split('|').forEach(line => { const p = document.createElement('p'); body.appendChild(p); t = words(p, line.trim(), .09, t) + .35 });
+  t = words($id('qTitle'), C.ask, .17, t + .15);
+  if(RM){ paper.classList.add('skip'); showAnswer(); return }
+  void paper.offsetWidth; paper.classList.add('go');
+  letterTimer = setTimeout(showAnswer, (t + .7) * 1000);
+}
+$id('paper').addEventListener('click', () => { const p = $id('paper'); if(!p.classList.contains('skip')){ p.classList.add('skip'); showAnswer() } });
 document.getElementById('letterMark').textContent = (C.from.trim()[0] || '').toUpperCase() + ' & ' + (C.to.trim()[0] || '').toUpperCase();
 let opened = false;
 document.getElementById('env').onclick = function(){
   if(opened) return; opened = true;
   const env = this, s1 = document.getElementById('s1');
   s1.classList.add('started'); env.classList.add('opening');   /* seal cracks */
-  setTimeout(() => { env.classList.add('open'); burst(26) }, 800);   /* flap lifts, petals */
-  setTimeout(() => env.classList.add('rise'), 1900);                 /* letter slides out */
-  setTimeout(() => env.classList.add('untie'), 3700);                /* ribbon bow loosens */
-  setTimeout(() => env.classList.add('slip'), 4500);                 /* ribbon slides off */
-  setTimeout(() => s1.classList.add('leaving'), 6000);               /* envelope fades */
-  setTimeout(() => { show('s2'); typeTitle() }, 6900);
+  setTimeout(() => { env.classList.add('open'); burst(26) }, T(800));   /* flap lifts, petals */
+  setTimeout(() => env.classList.add('rise'), T(1900));                 /* letter slides out */
+  setTimeout(() => env.classList.add('untie'), T(3700));                /* ribbon bow loosens */
+  setTimeout(() => env.classList.add('slip'), T(4500));                 /* ribbon slides off */
+  setTimeout(() => s1.classList.add('leaving'), T(6000));               /* envelope fades */
+  setTimeout(() => { show('s2'); startLetter() }, T(6900));
 };
 
 /* ---------- The runaway No button ---------- */
@@ -366,10 +415,10 @@ function sayYes(){
   hers.style.transform = 'translateX(' + (-maxX/2) + 'px) scale(1.25)';
   his.style.transform = 'translateX(' + (maxX/2) + 'px) scale(1.25)';
   mfill.style.width = maxX + 'px';
-  setTimeout(() => meet.classList.add('merged'), 650);
-  setTimeout(() => { s2.classList.add('stamping'); stamp.classList.add('slam') }, 950);
-  setTimeout(() => { s2.classList.add('shake'); burst(90); try{ navigator.vibrate && navigator.vibrate([40,60,40]) }catch(e){} }, 1230);
-  setTimeout(() => { show('s3'); build(); stamp.classList.add('gone'); burst(60) }, 3300);
+  setTimeout(() => meet.classList.add('merged'), T(650));
+  setTimeout(() => { s2.classList.add('stamping'); stamp.classList.add('slam') }, T(950));
+  setTimeout(() => { s2.classList.add('shake'); burst(90); try{ navigator.vibrate && navigator.vibrate([40,60,40]) }catch(e){} }, T(1230));
+  setTimeout(() => { show('s3'); build(); stamp.classList.add('gone'); burst(60) }, T(3300));
 }
 
 /* ---------- Ticket ---------- */
@@ -472,6 +521,7 @@ const colours = ['#d93f68','#f08aa3','#f6b8c7','#c9a24b','#a82a4f'];
 let parts = [], running = false;
 function fit(){cv.width = innerWidth; cv.height = innerHeight} fit(); addEventListener('resize', fit);
 function burst(n=130){
+  if(RM) n = Math.min(n, 20);
   for(let i=0;i<n;i++) parts.push({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-3,g:.35,s:Math.random()*16+12,r:Math.random()*6,vr:(Math.random()-.5)*.3,petal:i%3===0,c:colours[i%colours.length],life:110+Math.random()*50});
   if(!running){running = true; requestAnimationFrame(loop)}
 }
