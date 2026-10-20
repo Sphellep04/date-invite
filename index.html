@@ -220,7 +220,7 @@ for(let i=0;i<20;i++){
 /* ---------- Screens ---------- */
 const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){}};
 document.getElementById('toLine').textContent = 'For ' + C.to;
-const titleText = C.to + ', can I take you out' + (meal ? ' for ' + meal : '') + '?';
+const titleText = 'Hey, can I take you out' + (meal ? ' for ' + meal : '') + '?';
 const qTitle = document.getElementById('qTitle');
 qTitle.setAttribute('aria-label', titleText);
 document.getElementById('qSub').textContent = C.sub;
