@@ -19,7 +19,7 @@
   lat/lng: optional exact pin for the map.
   reveal : 0 skips the reveal step.   photo : optional image.
   music  : optional link to your own audio file (mp3). Leave out to use the built-in piano. music=off hides the button.
-  sound  : sound=auto starts the music when she taps the envelope. Otherwise it only plays if she taps the Music button.
+  sound  : the music starts when she taps the envelope, and the Music button pauses it. sound=off keeps it silent until she taps the button.
 */
 :root{--rose:#d93f68;--deep:#6e1a38;--blush:#ffe6ec;--cream:#fff8f3;--gold:#c9a24b;--ink:#4a1226}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -427,12 +427,12 @@ const Music = (() => {
   if(url === 'off') btn.style.display = 'none';
   btn.onclick = () => on ? stop() : start();
   document.addEventListener('visibilitychange', () => { if(!ctx && !el) return; if(document.hidden){ if(on){ el ? el.pause() : ctx.suspend() } } else if(on){ el ? el.play().catch(()=>{}) : ctx.resume() } });
-  return { start, auto: g('sound','') === 'auto' };
+  return { start, auto: g('sound','') !== 'off' };
 })();
 
 document.getElementById('env').onclick = function(){
-  if(Music.auto) Music.start();
   if(opened) return; opened = true;
+  if(Music.auto) Music.start();
   const env = this, s1 = document.getElementById('s1');
   s1.classList.add('started'); env.classList.add('opening');   /* seal cracks */
   setTimeout(() => { env.classList.add('open'); burst(26) }, T(800));   /* flap lifts, petals */
