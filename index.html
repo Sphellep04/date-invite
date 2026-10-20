@@ -18,9 +18,8 @@
   venue  : set to Bossa, Maerua Mall for now. Use venue= with an empty value to hide it again.
   lat/lng: optional exact pin for the map.
   reveal : 0 skips the reveal step.   photo : optional image.
-  music  : optional link to your own audio file (mp3). It replaces the YouTube song. music=off hides the button.
+  music  : optional link to your own audio file (mp3). It replaces the YouTube song.
   yt     : YouTube video id of the song (default is River Flows in You). ytstart= sets the start second. yt=off uses the built-in piano only.
-  sound  : the music starts when she taps the envelope, and the Music button pauses it. sound=off keeps it silent until she taps the button.
 */
 :root{--rose:#d93f68;--deep:#6e1a38;--blush:#ffe6ec;--cream:#fff8f3;--gold:#c9a24b;--ink:#4a1226}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -155,6 +154,7 @@ body.lit .sign{color:#f6dfe5}
   .floaters{display:none}
 }
 
+.musicbtn[hidden]{display:none}
 .musicbtn{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:60;display:flex;align-items:center;gap:7px;padding:9px 14px 9px 11px;border-radius:999px;border:1px solid rgba(217,63,107,.28);background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--deep);font:500 .8rem 'DM Sans',sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
 .musicbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .musicbtn .x{display:block}.musicbtn .w1,.musicbtn .w2{display:none}
@@ -228,7 +228,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
     <text id="stampMark" x="100" y="152" text-anchor="middle" font-size="22" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" letter-spacing="3"></text>
   </g></svg></div>
 <div class="candle" id="candle"></div>
-<button class="musicbtn" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.6L12 18.5v-13L7.6 9.5H4z" fill="currentColor" stroke="none"/><path class="w1" d="M15.2 9.2c1.1 1.6 1.1 4 0 5.6"/><path class="w2" d="M17.6 6.8c2.2 3 2.2 7.4 0 10.4"/><path class="x" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span id="musicTxt">Music</span></button>
+<button class="musicbtn" id="musicBtn" type="button" hidden aria-pressed="false" aria-label="Play music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.6L12 18.5v-13L7.6 9.5H4z" fill="currentColor" stroke="none"/><path class="w1" d="M15.2 9.2c1.1 1.6 1.1 4 0 5.6"/><path class="w2" d="M17.6 6.8c2.2 3 2.2 7.4 0 10.4"/><path class="x" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span id="musicTxt">Music</span></button>
 
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
@@ -467,7 +467,6 @@ const Music = (() => {
     const m = mode();
     ramp(0, 700, () => { if(m === 'yt') ytp.pauseVideo(); else if(m === 'el') el.pause(); else { clearInterval(timer); ctx && ctx.suspend() } });
   }
-  if(url === 'off') btn.style.display = 'none';
   btn.onclick = () => on ? stop() : start();
   document.addEventListener('visibilitychange', () => {
     if(!on) return; const m = mode();
@@ -475,7 +474,7 @@ const Music = (() => {
     else { m === 'yt' ? ytp.playVideo() : m === 'el' ? el.play().catch(()=>{}) : ctx && ctx.resume() }
   });
   loadYT();
-  return { start, auto: g('sound','') !== 'off' };
+  return { start, auto: true };
 })();
 
 document.getElementById('env').onclick = function(){
