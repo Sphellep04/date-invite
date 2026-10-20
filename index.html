@@ -85,12 +85,15 @@ h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em
 .mline{position:absolute;left:32px;right:32px;top:41px;border-top:2px dashed #f0a9bc}
 .mfill{position:absolute;right:32px;top:40px;height:3px;border-radius:2px;background:var(--rose);width:0}
 .hrt{position:absolute;top:10px;width:64px;height:64px;display:grid;place-items:center}
-.hrt svg{position:absolute;inset:0;width:100%;height:100%;fill:currentColor;stroke:none;filter:drop-shadow(0 4px 6px rgba(110,26,56,.25))}
+.hrt svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 8px rgba(110,26,56,.32))}
 .hrt span{position:relative;font-family:'Instrument Serif',serif;font-size:1.7rem;color:#fff;margin-top:-4px;transition:opacity .3s}
 .his{left:0;color:#8f2142}
 .hers{right:0;color:var(--rose);cursor:grab;touch-action:none;outline:none}
 .hers svg{animation:beat 1.6s infinite}
 .hers:active{cursor:grabbing}
+.hers::before{content:"";position:absolute;inset:2px;border-radius:50%;border:1.5px solid rgba(217,63,107,.5);animation:ring 2.2s ease-out infinite;pointer-events:none}
+.merged .hers::before{display:none}
+@keyframes ring{from{transform:scale(.9);opacity:.9}to{transform:scale(1.55);opacity:0}}
 .pr{position:absolute;left:50%;top:42px;transform:translate(-50%,-50%);font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;color:#fff;opacity:0;transition:opacity .4s;pointer-events:none;z-index:3}
 .merged .hrt span{opacity:0}
 .merged .hrt svg{animation:beat .7s 3}
@@ -199,6 +202,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.5"/></filter>
+  <linearGradient id="hg-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#2a0614" stop-opacity=".30"/></linearGradient>
+  <symbol id="i-heart-rich" viewBox="0 0 24 24"><path d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z" fill="currentColor"/><path d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z" fill="url(#hg-shade)" stroke="rgba(255,255,255,.45)" stroke-width=".35"/><path d="M5 8.2C5 6.9 5.9 5.9 7.1 5.9C7.9 5.9 8.6 6.2 9.1 6.8" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width=".9" stroke-linecap="round"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></symbol>
   <symbol id="i-petal" viewBox="0 0 24 24"><path d="M12 2C18 7 18 17 12 22C6 17 6 7 12 2Z"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
@@ -244,8 +249,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
   <div class="answer" id="answer">
     <div class="meet" id="meet">
       <div class="mline"></div><div class="mfill" id="mfill"></div>
-      <div class="hrt his" id="his"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hisL"></span></div>
-      <div class="hrt hers" id="hers" role="button" tabindex="0" aria-label="Bring our hearts together to say yes"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hersL"></span></div>
+      <div class="hrt his" id="his"><svg viewBox="0 0 24 24"><use href="#i-heart-rich"/></svg><span id="hisL"></span></div>
+      <div class="hrt hers" id="hers" role="button" tabindex="0" aria-label="Bring our hearts together to say yes"><svg viewBox="0 0 24 24"><use href="#i-heart-rich"/></svg><span id="hersL"></span></div>
       <div class="pr" id="pr"></div>
     </div>
     <div class="meet-hint">Bring our hearts together for a yes</div>
