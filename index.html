@@ -10,7 +10,7 @@
   HOW TO REUSE THIS PAGE
   The defaults below are set for Rejoice, so the plain link already works.
   For anyone else, or to change a detail, override it in the link. Example:
-  ?to=Rejoice&from=Phellep&days=2026-10-23,2026-10-24&meal=dinner
+  ?to=Rejoice&from=Phellep&days=2026-10-24&meal=dinner
   &venue=Name%20of%20place&address=Windhoek&lat=-22.56&lng=17.08
   &phone=264817854558&note=...&dress=...&sub=...
   days   : one or more dates (YYYY-MM-DD). Two or more lets her choose.
@@ -291,7 +291,7 @@ const HEART = 'M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C
 /* ---------- Details (set through the link) ---------- */
 const C = {
   to: g('to','Rejoice'), from: g('from','Phellep'),
-  days: g('days', g('date','2026-10-23,2026-10-24')).split(',').map(x=>x.trim()).filter(Boolean),
+  days: g('days', g('date','2026-10-24')).split(',').map(x=>x.trim()).filter(Boolean),
   meal: g('meal','dinner'), time: g('time',''),
   venue: g('venue','Bossa'), address: g('address','Maerua Mall, Windhoek'), map: g('map',''),
   lat: g('lat',''), lng: g('lng',''),
