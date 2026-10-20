@@ -18,6 +18,8 @@
   venue  : set to Bossa, Maerua Mall for now. Use venue= with an empty value to hide it again.
   lat/lng: optional exact pin for the map.
   reveal : 0 skips the reveal step.   photo : optional image.
+  music  : optional link to your own audio file (mp3). Leave out to use the built-in piano. music=off hides the button.
+  sound  : sound=auto starts the music when she taps the envelope. Otherwise it only plays if she taps the Music button.
 */
 :root{--rose:#d93f68;--deep:#6e1a38;--blush:#ffe6ec;--cream:#fff8f3;--gold:#c9a24b;--ink:#4a1226}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -152,6 +154,12 @@ body.lit .sign{color:#f6dfe5}
   .floaters{display:none}
 }
 
+.musicbtn{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:60;display:flex;align-items:center;gap:7px;padding:9px 14px 9px 11px;border-radius:999px;border:1px solid rgba(217,63,107,.28);background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--deep);font:500 .8rem 'DM Sans',sans-serif;letter-spacing:.04em;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
+.musicbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.musicbtn .x{display:block}.musicbtn .w1,.musicbtn .w2{display:none}
+.musicbtn.on .x{display:none}.musicbtn.on .w1,.musicbtn.on .w2{display:block}
+.musicbtn.on{background:var(--deep);color:#fff4f6;border-color:transparent}
+body.lit .musicbtn:not(.on){background:rgba(255,244,246,.14);color:#f6dfe5;border-color:rgba(255,255,255,.22)}
 /* ticket */
 .ticket{background:#fff;width:min(420px,100%);border-radius:20px;box-shadow:0 20px 50px rgba(110,26,56,.22);overflow:hidden;text-align:left}
 .t-head{background:linear-gradient(135deg,var(--rose),#a82a4f);color:#fff;padding:24px;text-align:center}
@@ -219,6 +227,8 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
     <text id="stampMark" x="100" y="152" text-anchor="middle" font-size="22" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" letter-spacing="3"></text>
   </g></svg></div>
 <div class="candle" id="candle"></div>
+<button class="musicbtn" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.6L12 18.5v-13L7.6 9.5H4z" fill="currentColor" stroke="none"/><path class="w1" d="M15.2 9.2c1.1 1.6 1.1 4 0 5.6"/><path class="w2" d="M17.6 6.8c2.2 3 2.2 7.4 0 10.4"/><path class="x" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span id="musicTxt">Music</span></button>
+
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
 
@@ -354,7 +364,74 @@ function startLetter(){
 $id('paper').addEventListener('click', () => { const p = $id('paper'); if(!p.classList.contains('skip')){ p.classList.add('skip'); showAnswer() } });
 document.getElementById('letterMark').textContent = (C.from.trim()[0] || '').toUpperCase() + ' & ' + (C.to.trim()[0] || '').toUpperCase();
 let opened = false;
+/* ---------- Music: a soft piano loop made in the browser, or your own file via music= ---------- */
+const Music = (() => {
+  const url = g('music',''), btn = $id('musicBtn');
+  let ctx, master, delay, timer, on = false, step = 0, nextT = 0, el = null, fade = null;
+  const hz = n => 440 * Math.pow(2, (n - 69) / 12);
+  /* Cmaj7, Am7, Fmaj7, G6 */
+  const prog = [[48,55,59,64],[45,52,60,64],[41,48,57,64],[43,50,59,64]];
+  const arp = [0,1,2,3,2,1,3,2], EIGHTH = .56;
+  function pluck(n, t, vel){
+    const g1 = ctx.createGain(), f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2400;
+    [['triangle',1,1],['sine',2,.25]].forEach(([type,mul,amp]) => {
+      const o = ctx.createOscillator(); o.type = type; o.frequency.value = hz(n) * mul;
+      const gg = ctx.createGain(); gg.gain.value = amp; o.connect(gg); gg.connect(g1); o.start(t); o.stop(t + 3);
+    });
+    g1.gain.setValueAtTime(0.0001, t); g1.gain.exponentialRampToValueAtTime(vel, t + .012); g1.gain.exponentialRampToValueAtTime(.0001, t + 2.6);
+    g1.connect(f); f.connect(master); f.connect(delay);
+  }
+  function pad(chord, t){
+    chord.slice(0,3).forEach(n => {
+      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = hz(n); o.detune.value = (Math.random() - .5) * 8;
+      const gg = ctx.createGain(); gg.gain.setValueAtTime(.0001, t); gg.gain.linearRampToValueAtTime(.035, t + 1.4); gg.gain.linearRampToValueAtTime(.0001, t + EIGHTH * 8 + .8);
+      o.connect(gg); gg.connect(master); o.start(t); o.stop(t + EIGHTH * 8 + 1);
+    });
+  }
+  function tick(){
+    while(nextT < ctx.currentTime + .4){
+      const bar = Math.floor(step / 8) % prog.length, i = step % 8, chord = prog[bar];
+      if(i === 0) pad(chord, nextT);
+      pluck(chord[arp[i]] + (arp[i] > 1 ? 12 : 0), nextT, i === 0 ? .2 : .1);
+      if(i === 0) pluck(chord[0] - 12, nextT, .16);
+      if(i === 4 && bar % 2 === 1) pluck(chord[3] + 12, nextT + .02, .09);
+      nextT += EIGHTH; step++;
+    }
+  }
+  function ramp(to, ms, done){
+    clearInterval(fade);
+    const get = () => el ? el.volume : master.gain.value, set = v => { if(el) el.volume = Math.max(0, Math.min(1, v)); else master.gain.value = v };
+    const from = get(), t0 = performance.now();
+    fade = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); set(from + (to - from) * k); if(k >= 1){ clearInterval(fade); done && done() } }, 40);
+  }
+  function setUI(){ btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on); btn.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); $id('musicTxt').textContent = on ? 'Playing' : 'Music' }
+  function start(){
+    if(on) return; on = true; setUI();
+    if(url){
+      if(!el){ el = new Audio(url); el.loop = true; el.volume = 0 }
+      el.play().catch(() => { on = false; setUI() }); ramp(.8, 2500); return;
+    }
+    if(!ctx){
+      const AC = window.AudioContext || window.webkitAudioContext; if(!AC){ on = false; setUI(); return }
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      delay = ctx.createDelay(1); delay.delayTime.value = .42; const fb = ctx.createGain(); fb.gain.value = .38;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500;
+      delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(master);
+    }
+    ctx.resume(); nextT = ctx.currentTime + .15; clearInterval(timer); timer = setInterval(tick, 120); tick(); ramp(.7, 3000);
+  }
+  function stop(){
+    if(!on) return; on = false; setUI();
+    ramp(0, 700, () => { if(el) el.pause(); else { clearInterval(timer); ctx && ctx.suspend() } });
+  }
+  if(url === 'off') btn.style.display = 'none';
+  btn.onclick = () => on ? stop() : start();
+  document.addEventListener('visibilitychange', () => { if(!ctx && !el) return; if(document.hidden){ if(on){ el ? el.pause() : ctx.suspend() } } else if(on){ el ? el.play().catch(()=>{}) : ctx.resume() } });
+  return { start, auto: g('sound','') === 'auto' };
+})();
+
 document.getElementById('env').onclick = function(){
+  if(Music.auto) Music.start();
   if(opened) return; opened = true;
   const env = this, s1 = document.getElementById('s1');
   s1.classList.add('started'); env.classList.add('opening');   /* seal cracks */
