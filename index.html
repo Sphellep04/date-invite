@@ -80,6 +80,34 @@ h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em
 .envelope.slip .rband{transform:translateY(120px);opacity:0}
 .envelope.slip .rbow{transform:translateY(120px);opacity:0}
 
+/* two hearts meet, then a stamp lands */
+.meet{position:relative;width:min(320px,86vw);height:84px;margin:4px auto 6px;user-select:none;-webkit-user-select:none}
+.mline{position:absolute;left:32px;right:32px;top:41px;border-top:2px dashed #f0a9bc}
+.mfill{position:absolute;right:32px;top:40px;height:3px;border-radius:2px;background:var(--rose);width:0}
+.hrt{position:absolute;top:10px;width:64px;height:64px;display:grid;place-items:center}
+.hrt svg{position:absolute;inset:0;width:100%;height:100%;fill:currentColor;stroke:none;filter:drop-shadow(0 4px 6px rgba(110,26,56,.25))}
+.hrt span{position:relative;font-family:'Instrument Serif',serif;font-size:1.7rem;color:#fff;margin-top:-4px;transition:opacity .3s}
+.his{left:0;color:#8f2142}
+.hers{right:0;color:var(--rose);cursor:grab;touch-action:none;outline:none}
+.hers svg{animation:beat 1.6s infinite}
+.hers:active{cursor:grabbing}
+.pr{position:absolute;left:50%;top:42px;transform:translate(-50%,-50%);font-family:'Instrument Serif',serif;font-style:italic;font-size:1.5rem;color:#fff;opacity:0;transition:opacity .4s;pointer-events:none;z-index:3}
+.merged .hrt span{opacity:0}
+.merged .hrt svg{animation:beat .7s 3}
+.merged .pr{opacity:1}
+.meet-hint{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-bottom:6px}
+#s2.stamping h1,#s2.stamping p,#s2.stamping .btns,#s2.stamping .taunt,#s2.stamping .meet-hint,#s2.stamping .drawheart,#s2.stamping .meet{opacity:.12;transition:opacity .4s}
+#s2.shake{animation:shake .38s}
+@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
+.stamp{position:fixed;left:50%;top:44%;width:210px;height:210px;margin:-105px 0 0 -105px;z-index:90;pointer-events:none;opacity:0}
+.stamp svg{width:100%;height:100%;overflow:visible}
+.stamp.slam{animation:slam .55s cubic-bezier(.2,.9,.3,1) forwards}
+.stamp.gone{display:none}
+@keyframes slam{0%{opacity:0;transform:scale(3.2) rotate(-26deg)}45%{opacity:1;transform:scale(.9) rotate(-10deg)}65%{transform:scale(1.07) rotate(-13deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
+.splash{position:absolute;inset:-34px;border-radius:50%;background:radial-gradient(circle,rgba(217,63,104,0) 52%,rgba(217,63,104,.3) 62%,rgba(217,63,104,0) 72%);opacity:0}
+.stamp.slam .splash{animation:splash .7s .22s ease-out forwards}
+@keyframes splash{0%{opacity:1;transform:scale(.6)}100%{opacity:0;transform:scale(1.7)}}
+
 /* question */
 .drawheart{width:84px;height:84px;margin-bottom:10px;overflow:visible}
 .drawheart path{fill:rgba(217,63,104,0);stroke:var(--rose);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
@@ -88,13 +116,8 @@ h1,h2{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.01em
 @keyframes fillin{to{fill:rgba(217,63,104,.9)}}
 .q h1{font-size:clamp(2.2rem,9vw,3.3rem);line-height:1.1;margin-bottom:12px;min-height:2.3em;max-width:560px}
 .q p{max-width:420px;margin-bottom:26px;font-weight:300;font-size:1.02rem}
-.btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:90px;flex-wrap:wrap;max-width:100%}
+.btns{display:flex;gap:16px;align-items:center;justify-content:center;min-height:64px;flex-wrap:wrap;max-width:100%}
 button{font-family:inherit;border:0;cursor:pointer;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s;min-height:48px;touch-action:manipulation}
-.yes{position:relative;top:0;display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#ec5a82,var(--rose));color:#fff;padding:15px 42px;font-size:1.15rem;letter-spacing:.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 0 #a82a4f,0 12px 24px rgba(217,63,104,.35);transition:top .1s,box-shadow .1s}
-.yes .ic{width:20px;height:20px;color:#fff;animation:beat 1.4s infinite}
-.yes::after{content:"";position:absolute;inset:0;border-radius:999px;border:2px solid var(--rose);animation:ring 2.2s ease-out infinite;pointer-events:none}
-@keyframes ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.3,1.6);opacity:0}}
-.yes:active{top:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 #a82a4f,0 6px 12px rgba(217,63,104,.35)}
 .no{background:#fff;color:var(--deep);padding:13px 28px;font-size:.98rem;border:1.5px solid #f2c4d1;box-shadow:0 3px 0 #f2c4d1,0 8px 16px rgba(110,26,56,.08);touch-action:none;user-select:none;-webkit-user-select:none}
 .no.run{position:fixed;z-index:50}
 .taunt{height:24px;margin-top:14px;font-family:'Instrument Serif',serif;font-style:italic;font-size:1.15rem;opacity:.85}
@@ -143,6 +166,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.5"/></filter>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></symbol>
   <symbol id="i-petal" viewBox="0 0 24 24"><path d="M12 2C18 7 18 17 12 22C6 17 6 7 12 2Z"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
@@ -151,6 +175,12 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
   <symbol id="i-hanger" viewBox="0 0 24 24"><path d="M12 9V8a2 2 0 1 0-2-2"/><path d="M12 9L3 16.5a1 1 0 0 0 .6 1.8h16.8a1 1 0 0 0 .6-1.8Z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 </svg>
+<div class="stamp" id="stamp"><div class="splash"></div>
+  <svg viewBox="0 0 200 200" aria-hidden="true"><g filter="url(#rough)" stroke="#c42a52" fill="none">
+    <circle cx="100" cy="100" r="90" stroke-width="6"/><circle cx="100" cy="100" r="79" stroke-width="2"/>
+    <text x="100" y="120" text-anchor="middle" font-size="74" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" font-style="italic">Yes</text>
+    <text id="stampMark" x="100" y="152" text-anchor="middle" font-size="22" fill="#c42a52" stroke="none" font-family="Instrument Serif,serif" letter-spacing="3"></text>
+  </g></svg></div>
 <div class="floaters" id="floaters"></div>
 <canvas id="confetti"></canvas>
 
@@ -175,10 +205,14 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
   <svg class="drawheart" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M12 20.5C5 15.5 2.5 12 2.5 8.6C2.5 6 4.5 4 7 4C9 4 10.7 5.1 12 7C13.3 5.1 15 4 17 4C19.5 4 21.5 6 21.5 8.6C21.5 12 19 15.5 12 20.5Z"/></svg>
   <h1 id="qTitle"></h1>
   <p id="qSub"></p>
-  <div class="btns" id="btns">
-    <button class="yes" id="yes"><svg class="ic fill"><use href="#i-heart"/></svg>Yes</button>
-    <button class="no" id="no">No</button>
+  <div class="meet" id="meet">
+    <div class="mline"></div><div class="mfill" id="mfill"></div>
+    <div class="hrt his" id="his"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hisL"></span></div>
+    <div class="hrt hers" id="hers" role="button" tabindex="0" aria-label="Bring our hearts together to say yes"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><span id="hersL"></span></div>
+    <div class="pr" id="pr"></div>
   </div>
+  <div class="meet-hint">Bring our hearts together</div>
+  <div class="btns" id="btns"><button class="no" id="no">No</button></div>
   <div class="taunt" id="taunt"></div>
 </section>
 
@@ -248,7 +282,7 @@ for(let i=0;i<20;i++){
 }
 
 /* ---------- Screens ---------- */
-const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){}};
+const show = id => {document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');try{scrollTo(0,0)}catch(e){} if(id==='s2'){ measure(); setT(base) }};
 document.getElementById('toLine').textContent = 'For ' + C.to;
 const titleText = 'Hey, can I take you out' + (meal ? ' for ' + meal : '') + '?';
 const qTitle = document.getElementById('qTitle');
@@ -274,19 +308,17 @@ document.getElementById('env').onclick = function(){
 };
 
 /* ---------- The runaway No button ---------- */
-const no = document.getElementById('no'), yes = document.getElementById('yes'), taunt = document.getElementById('taunt');
+const no = document.getElementById('no'), taunt = document.getElementById('taunt');
 const taunts = ['Are you sure?','Eish, that button is not working today','Try the other one, it is bigger','Plot twist: that button has commitment issues','Come on, ' + C.to + '.','I can see you smiling','Okay, last chance to be reasonable'];
 const noLabels = ['No','Hmm','Really?','Please?','Okay, fine, yes'];
 let tries = 0, scale = 1, lastDodge = 0;
 function dodge(e){
   if(e){e.preventDefault()}
   const now = Date.now(); if(now - lastDodge < 350) return; lastDodge = now; /* one dodge per touch, phones fire several events */
-  tries++; scale = Math.min(scale + .18, innerWidth < 500 ? 1.7 : 2.6);
-  yes.style.transform = 'scale(' + scale + ')';
-  yes.style.margin = (scale*8) + 'px';
+  tries++; base = Math.min(tries*.09,.45); if(!dragging && !done) setT(base,true);   /* each No brings the hearts closer */
   taunt.textContent = taunts[(tries-1) % taunts.length];
   no.textContent = noLabels[Math.min(tries, noLabels.length-1)];
-  if(tries >= 5){ no.classList.remove('run'); no.style.left = no.style.top = ''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; yes.style.transform = 'scale(1.3)'; return }
+  if(tries >= 5){ no.classList.remove('run'); no.style.left = no.style.top = ''; no.removeEventListener('pointerenter',dodge); no.removeEventListener('pointerdown',dodge); no.removeEventListener('touchstart',dodge); no.onclick = sayYes; return }
   const w = no.offsetWidth, h = no.offsetHeight;
   no.classList.add('run');
   no.style.left = Math.max(8, Math.random()*(innerWidth - w - 16)) + 'px';
@@ -296,8 +328,44 @@ no.addEventListener('pointerenter', dodge);
 no.addEventListener('pointerdown', dodge);
 no.addEventListener('touchstart', dodge, {passive:false});
 no.onclick = dodge;
-yes.onclick = sayYes;
-function sayYes(){ burst(); show('s3'); build(); setTimeout(burst, 700); }
+
+/* ---------- Two hearts meet ---------- */
+const $ = id => document.getElementById(id);
+const meet = $('meet'), hers = $('hers'), his = $('his'), mfill = $('mfill'), stamp = $('stamp');
+$('hisL').textContent = (C.from.trim()[0] || '').toUpperCase();
+$('hersL').textContent = (C.to.trim()[0] || '').toUpperCase();
+$('pr').textContent = (C.from.trim()[0] || '').toUpperCase() + ' & ' + (C.to.trim()[0] || '').toUpperCase();
+$('stampMark').textContent = (C.from.trim()[0] || '').toUpperCase() + ' & ' + (C.to.trim()[0] || '').toUpperCase();
+let maxX = 0, t = 0, base = 0, dragging = false, startX = 0, startT = 0, moved = false, done = false;
+function measure(){ maxX = Math.max(0, meet.clientWidth - hers.offsetWidth) }
+function setT(v, animate){
+  t = Math.max(0, Math.min(1, v)); hers.style.transition = animate ? 'transform .45s cubic-bezier(.3,1.4,.5,1)' : 'none';
+  hers.style.transform = 'translateX(' + (-t*maxX) + 'px) rotate(' + (-t*10) + 'deg)';
+  mfill.style.width = (t*maxX) + 'px';
+}
+hers.addEventListener('pointerdown', e => { if(done) return; measure(); dragging = true; moved = false; startX = e.clientX; startT = t; try{hers.setPointerCapture(e.pointerId)}catch(x){} });
+hers.addEventListener('pointermove', e => {
+  if(!dragging) return; const dx = e.clientX - startX; if(Math.abs(dx) > 6) moved = true;
+  setT(startT - dx / (maxX || 1)); if(t >= .96){ dragging = false; sayYes() }
+});
+const release = () => { if(!dragging) return; dragging = false; if(!moved || t > .7) sayYes(); else setT(base, true) };
+hers.addEventListener('pointerup', release); hers.addEventListener('pointercancel', release);
+hers.addEventListener('keydown', e => { if(['Enter',' ','ArrowLeft'].includes(e.key)){ e.preventDefault(); sayYes() } });
+addEventListener('resize', () => { measure(); setT(t) });
+
+/* hearts meet in the middle, then the stamp slams down on the page */
+function sayYes(){
+  if(done) return; done = true; no.style.display = 'none'; measure();
+  const s2 = $('s2'), ease = 'transform .65s cubic-bezier(.5,0,.2,1)';
+  hers.style.transition = his.style.transition = ease;
+  hers.style.transform = 'translateX(' + (-maxX/2) + 'px) scale(1.25)';
+  his.style.transform = 'translateX(' + (maxX/2) + 'px) scale(1.25)';
+  mfill.style.width = maxX + 'px';
+  setTimeout(() => meet.classList.add('merged'), 650);
+  setTimeout(() => { s2.classList.add('stamping'); stamp.classList.add('slam') }, 950);
+  setTimeout(() => { s2.classList.add('shake'); burst(90); try{ navigator.vibrate && navigator.vibrate([40,60,40]) }catch(e){} }, 1230);
+  setTimeout(() => { show('s3'); build(); stamp.classList.add('gone'); burst(60) }, 3300);
+}
 
 /* ---------- Ticket ---------- */
 const initial = s => (s.trim()[0] || '').toUpperCase();
