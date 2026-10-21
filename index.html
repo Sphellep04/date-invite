@@ -188,8 +188,6 @@ body.lit /* ticket */
 .revealed .revealbtn{display:none}
 .mapwrap{border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(110,26,56,.15);height:200px;background:var(--blush)}
 .mapwrap iframe{width:100%;height:100%;border:0;display:block}
-.lockhint{padding:0 24px 14px;font-size:.88rem;opacity:.75;text-align:center}
-.lockhint:empty{display:none}
 .actions{display:grid;gap:10px;padding:0 24px 24px}
 .act{display:block;text-align:center;text-decoration:none;background:var(--deep);color:#fff;padding:14px;border-radius:999px;font-size:.92rem;font-weight:600;transition:transform .2s}
 .act:hover{transform:translateY(-2px)}
@@ -278,7 +276,6 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
       <div class="row" id="dressRow"><svg class="ic"><use href="#i-hanger"/></svg><div><b>Dress code</b><span class="v" id="tDress"></span></div></div>
       <div class="note" id="tNote" style="display:none"></div>
     </div>
-    <div class="lockhint" id="lockHint"></div>
     <div class="actions">
       <a class="act needs" id="gcal" target="_blank" rel="noopener">Add to Google Calendar</a>
       <a class="act alt needs" id="ics" href="#">Add to Apple or Outlook calendar</a>
@@ -544,7 +541,6 @@ function build(){
   /* calendar and directions unlock once there is a day, a venue and it has been revealed */
   const ready = hasVenue && revealed && !!day;
   document.querySelector('.actions').classList.toggle('locked', !ready);
-  document.getElementById('lockHint').textContent = ready ? '' : !day ? 'Choose a day above to unlock the calendar.' : !hasVenue ? 'The calendar and directions unlock once I have chosen the location.' : 'Reveal the location to unlock the calendar.';
 
   const loc = C.venue + (C.address ? ', ' + C.address : '');
   const title = cap(mealWord()) + ' with ' + C.from;
